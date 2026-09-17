@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import PlanningTable from './components/planning/PlanningTable'
 import LessonPresentation from './components/classroom/LessonPresentation'
+import OralEvaluation from './components/evaluation/OralEvaluation'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -84,8 +85,7 @@ function App() {
 
         {activeTab === 'oral' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">{t('oral_evaluation')}</h2>
-            <p className="text-gray-600">Oral evaluation grid will be implemented here.</p>
+            <OralEvaluation />
           </div>
         )}
       </main>

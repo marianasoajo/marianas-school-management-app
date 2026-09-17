@@ -56,7 +56,15 @@ const resources = {
       "url": "URL",
       "file": "File",
       "description": "Description",
-      "notes": "Notes"
+      "notes": "Notes",
+      "student_name": "Student Name",
+      "add_student": "Add Student",
+      "no_evaluations": "No evaluations yet. Click \"Add Student\" to get started.",
+      "column_a": "Column A",
+      "column_b": "Column B",
+      "student_self": "Self-Assessment",
+      "teacher_verdict": "Teacher Assessment",
+      "scale": "Rating Scale"
     }
   },
   pt: {
@@ -113,7 +121,15 @@ const resources = {
       "url": "URL",
       "file": "Ficheiro",
       "description": "Descrição",
-      "notes": "Notas"
+      "notes": "Notas",
+      "student_name": "Nome do Aluno",
+      "add_student": "Adicionar Aluno",
+      "no_evaluations": "Sem avaliações. Clique em \"Adicionar Aluno\" para começar.",
+      "column_a": "Coluna A",
+      "column_b": "Coluna B",
+      "student_self": "Auto-Avaliação",
+      "teacher_verdict": "Avaliação do Professor",
+      "scale": "Escala de Avaliação"
     }
   }
 }
