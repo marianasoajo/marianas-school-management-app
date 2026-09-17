@@ -11,7 +11,11 @@ const resources = {
       "activities": "Activities",
       "manual_pages": "Manual Page(s)",
       "resources": "Resources (Physical/Digital)",
+      "resources_physical": "Resources (Physical)",
+      "resources_digital": "Resources (Digital)",
       "exercises": "Exercises (Physical/Digital)",
+      "exercises_physical": "Exercises (Physical)",
+      "exercises_digital": "Exercises (Digital)",
       "registers": "Registers",
       "school_logo": "School Logo",
       "level": "Level",
@@ -27,7 +31,13 @@ const resources = {
       "poor": "Can Do Better",
       "fair": "Did Well",
       "good": "Did Very Well",
-      "excellent": "Was Excellent"
+      "excellent": "Was Excellent",
+      "add_row": "Add Row",
+      "delete_row": "Delete Row",
+      "save": "Save",
+      "loading": "Loading…",
+      "no_units": "No planning units yet. Click \"Add Row\" to get started.",
+      "new_theme_placeholder": "New theme"
     }
   },
   pt: {
@@ -39,7 +49,11 @@ const resources = {
       "activities": "Atividades",
       "manual_pages": "Página(s) do Manual",
       "resources": "Recursos (Físicos/Digitais)",
+      "resources_physical": "Recursos (Físicos)",
+      "resources_digital": "Recursos (Digitais)",
       "exercises": "Exercícios (Físicos/Digitais)",
+      "exercises_physical": "Exercícios (Físicos)",
+      "exercises_digital": "Exercícios (Digitais)",
       "registers": "Registos",
       "school_logo": "Logótipo da Escola",
       "level": "Nível",
@@ -55,7 +69,13 @@ const resources = {
       "poor": "Posso Fazer Melhor",
       "fair": "Fui Bom",
       "good": "Fui Muito Bom",
-      "excellent": "Fui Excelente"
+      "excellent": "Fui Excelente",
+      "add_row": "Adicionar Linha",
+      "delete_row": "Eliminar Linha",
+      "save": "Guardar",
+      "loading": "A carregar…",
+      "no_units": "Sem unidades de planificação. Clique em \\\"Adicionar Linha\\\" para começar.",
+      "new_theme_placeholder": "Novo tema"
     }
   }
 }
