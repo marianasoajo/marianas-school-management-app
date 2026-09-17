@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import PlanningTable from './components/planning/PlanningTable'
+import LessonPresentation from './components/classroom/LessonPresentation'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -77,8 +78,7 @@ function App() {
 
         {activeTab === 'presentation' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">{t('presentation')}</h2>
-            <p className="text-gray-600">Classroom presentation view will be implemented here.</p>
+            <LessonPresentation />
           </div>
         )}
 

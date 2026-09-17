@@ -37,7 +37,26 @@ const resources = {
       "save": "Save",
       "loading": "Loading…",
       "no_units": "No planning units yet. Click \"Add Row\" to get started.",
-      "new_theme_placeholder": "New theme"
+      "new_theme_placeholder": "New theme",
+      "select_lesson": "Select Lesson",
+      "lesson_single": "Lesson nº",
+      "lesson_double": "Lesson nº {{first}} and {{second}}",
+      "step_by_step": "Step-by-Step Guide",
+      "materials": "Materials & Attachments",
+      "teacher_notes": "Teacher Notes",
+      "past_future_summary": "Past/Future Summary",
+      "close": "Close",
+      "open_teacher_panel": "Open Teacher Panel",
+      "no_lessons": "No lessons available",
+      "upload": "Upload",
+      "external_link": "External Link",
+      "add_step": "Add Step",
+      "add_material": "Add Material",
+      "type": "Type",
+      "url": "URL",
+      "file": "File",
+      "description": "Description",
+      "notes": "Notes"
     }
   },
   pt: {
@@ -75,7 +94,26 @@ const resources = {
       "save": "Guardar",
       "loading": "A carregar…",
       "no_units": "Sem unidades de planificação. Clique em \\\"Adicionar Linha\\\" para começar.",
-      "new_theme_placeholder": "Novo tema"
+      "new_theme_placeholder": "Novo tema",
+      "select_lesson": "Selecionar Lição",
+      "lesson_single": "Lição nº",
+      "lesson_double": "Lição nº {{first}} e {{second}}",
+      "step_by_step": "Guia Passo-a-Passo",
+      "materials": "Materiais e Anexos",
+      "teacher_notes": "Notas do Professor",
+      "past_future_summary": "Sumários Passados/Futuros",
+      "close": "Fechar",
+      "open_teacher_panel": "Abrir Painel do Professor",
+      "no_lessons": "Sem lições disponíveis",
+      "upload": "Carregar Ficheiro",
+      "external_link": "Link Externo",
+      "add_step": "Adicionar Passo",
+      "add_material": "Adicionar Material",
+      "type": "Tipo",
+      "url": "URL",
+      "file": "Ficheiro",
+      "description": "Descrição",
+      "notes": "Notas"
     }
   }
 }
