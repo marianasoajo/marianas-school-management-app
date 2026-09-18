@@ -52,6 +52,7 @@ export default function StudentsManager() {
     birthdate: '',
     school_year_id: '',
     school_form_id: '',
+    group_number: '',
     guardian_name: '',
     guardian_phone: '',
     guardian_email: '',
