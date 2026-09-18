@@ -69,7 +69,22 @@ const resources = {
       "attending": "Present",
       "absent": "Absent",
       "no_students_enrolled": "No students enrolled in this class for this school year.",
-      "process_number": "Process No."
+      "process_number": "Process No.",
+      "academic_year": "Academic Year",
+      "all_years": "All Years",
+      "all_groups": "All Groups",
+      "filter_by_date": "Filter by Date",
+      "clear_filters": "Clear Filters",
+      "add_lesson": "Add Lesson",
+      "edit_lesson": "Edit Lesson",
+      "delete_lesson": "Delete Lesson",
+      "create_lesson": "Create Lesson",
+      "update_lesson": "Update Lesson",
+      "cancel": "Cancel",
+      "confirm_delete": "Are you sure you want to delete this lesson?",
+      "lesson_created": "Lesson created successfully",
+      "lesson_updated": "Lesson updated successfully",
+      "lesson_deleted": "Lesson deleted successfully"
     }
   },
   pt: {
@@ -139,7 +154,22 @@ const resources = {
       "attending": "Presente",
       "absent": "Ausente",
       "no_students_enrolled": "Não existem alunos inscritos nesta turma para este ano letivo.",
-      "process_number": "Nº Processo"
+      "process_number": "Nº Processo",
+      "academic_year": "Ano Letivo",
+      "all_years": "Todos os Anos",
+      "all_groups": "Todas as Turmas",
+      "filter_by_date": "Filtrar por Data",
+      "clear_filters": "Limpar Filtros",
+      "add_lesson": "Adicionar Lição",
+      "edit_lesson": "Editar Lição",
+      "delete_lesson": "Eliminar Lição",
+      "create_lesson": "Criar Lição",
+      "update_lesson": "Atualizar Lição",
+      "cancel": "Cancelar",
+      "confirm_delete": "Tem certeza de que deseja eliminar esta lição?",
+      "lesson_created": "Lição criada com sucesso",
+      "lesson_updated": "Lição atualizada com sucesso",
+      "lesson_deleted": "Lição eliminada com sucesso"
     }
   }
 }
