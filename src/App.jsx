@@ -81,7 +81,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="py-8">
         {activeTab === 'general' && (
           <div className="bg-white rounded-lg shadow p-6">
             <PlanningTable />
