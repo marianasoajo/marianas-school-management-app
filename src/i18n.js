@@ -64,7 +64,12 @@ const resources = {
       "column_b": "Column B",
       "student_self": "Self-Assessment",
       "teacher_verdict": "Teacher Assessment",
-      "scale": "Rating Scale"
+      "scale": "Rating Scale",
+      "attendance": "Attendance",
+      "attending": "Present",
+      "absent": "Absent",
+      "no_students_enrolled": "No students enrolled in this class for this school year.",
+      "process_number": "Process No."
     }
   },
   pt: {
@@ -129,7 +134,12 @@ const resources = {
       "column_b": "Coluna B",
       "student_self": "Auto-Avaliação",
       "teacher_verdict": "Avaliação do Professor",
-      "scale": "Escala de Avaliação"
+      "scale": "Escala de Avaliação",
+      "attendance": "Presença",
+      "attending": "Presente",
+      "absent": "Ausente",
+      "no_students_enrolled": "Não existem alunos inscritos nesta turma para este ano letivo.",
+      "process_number": "Nº Processo"
     }
   }
 }
