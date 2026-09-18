@@ -12,11 +12,11 @@ const RATING_LABELS = {
   5: 'excellent'     // Fui Excelente
 }
 
-export default function OralEvaluation() {
+export default function OralEvaluation({ lessonId = null, onClose = null }) {
   const { t } = useTranslation()
 
   const [lessons, setLessons] = useState([])
-  const [selectedLessonId, setSelectedLessonId] = useState(null)
+  const [selectedLessonId, setSelectedLessonId] = useState(lessonId)
   const [selectedLesson, setSelectedLesson] = useState(null)
   const [studentEvaluations, setStudentEvaluations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -47,14 +47,14 @@ export default function OralEvaluation() {
         setError(fetchError.message)
       } else {
         setLessons(data || [])
-        if (data && data.length > 0) {
+        if (data && data.length > 0 && !lessonId) {
           setSelectedLessonId(data[0].id)
         }
       }
       setLoading(false)
     }
     fetchLessons()
-  }, [])
+  }, [lessonId])
 
   // Fetch selected lesson details and enrolled students
   useEffect(() => {
@@ -226,18 +226,28 @@ export default function OralEvaluation() {
         <h2 className="text-xl font-semibold text-gray-900">
           {t('oral_evaluation')}
         </h2>
-        <button
-          onClick={handleSave}
-          disabled={saving || dirtyIds.size === 0}
-          className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
-        >
-          {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-          {t('save')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSave}
+            disabled={saving || dirtyIds.size === 0}
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+            {t('save')}
+          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              {t('close')}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Lesson Selector */}
-      {lessons.length > 0 && (
+      {!lessonId && lessons.length > 0 && (
         <div className="flex items-center gap-4">
           <label className="text-sm font-medium text-gray-700">
             {t('select_lesson')}:

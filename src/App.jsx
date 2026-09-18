@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import PlanningTable from './components/planning/PlanningTable'
 import LessonPresentation from './components/classroom/LessonPresentation'
-import OralEvaluation from './components/evaluation/OralEvaluation'
 import StudentsManager from './components/students/StudentsManager'
 import GroupsManager from './components/groups/GroupsManager'
 
@@ -58,16 +57,6 @@ function App() {
               {t('summaries')}
             </button>
             <button
-              onClick={() => setActiveTab('selfassessment')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'selfassessment'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('daily_selfassessment')}
-            </button>
-            <button
               onClick={() => setActiveTab('groups')}
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                 activeTab === 'groups'
@@ -102,12 +91,6 @@ function App() {
         {activeTab === 'summaries' && (
           <div className="bg-white rounded-lg shadow p-6">
             <LessonPresentation />
-          </div>
-        )}
-
-        {activeTab === 'selfassessment' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <OralEvaluation />
           </div>
         )}
 

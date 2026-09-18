@@ -14,9 +14,11 @@ import {
   Plus,
   Edit,
   Trash2,
-  Filter
+  Filter,
+  ClipboardCheck
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import OralEvaluation from '../evaluation/OralEvaluation'
 
 const SCHOOL_LOGO_URL = 'https://www.esmax.pt/images/logoaemax.png'
 
@@ -41,6 +43,8 @@ export default function LessonPresentation() {
   const [showTeacherPanel, setShowTeacherPanel] = useState(false)
   const [showNotesModal, setShowNotesModal] = useState(false)
   const [showLessonModal, setShowLessonModal] = useState(false)
+  const [showEvaluationModal, setShowEvaluationModal] = useState(false)
+  const [evaluationLessonId, setEvaluationLessonId] = useState(null)
   const [editingLesson, setEditingLesson] = useState(null)
 
   // Form state
@@ -221,6 +225,18 @@ export default function LessonPresentation() {
     return `${t('lesson_single')} ${lessonNumber}`
   }
 
+  // Open evaluation modal for a specific lesson
+  const openEvaluationModal = (lessonId) => {
+    setEvaluationLessonId(lessonId)
+    setShowEvaluationModal(true)
+  }
+
+  // Close evaluation modal
+  const closeEvaluationModal = () => {
+    setShowEvaluationModal(false)
+    setEvaluationLessonId(null)
+  }
+
   const steps = currentLesson?.step_by_step || []
   const materials = currentLesson?.materials || []
 
@@ -325,6 +341,14 @@ export default function LessonPresentation() {
                       </p>
                     </div>
                     <div className="flex gap-1">
+                      <button
+                        onClick={() => openEvaluationModal(lesson.id)}
+                        className="p-1.5 text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                        aria-label={t('evaluation')}
+                        title={t('evaluation')}
+                      >
+                        <ClipboardCheck size={14} />
+                      </button>
                       <button
                         onClick={() => openLessonModal(lesson)}
                         className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
@@ -660,6 +684,20 @@ export default function LessonPresentation() {
               >
                 {editingLesson ? t('update_lesson') : t('create_lesson')}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Evaluation Modal */}
+      {showEvaluationModal && evaluationLessonId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <OralEvaluation
+                lessonId={evaluationLessonId}
+                onClose={closeEvaluationModal}
+              />
             </div>
           </div>
         </div>
