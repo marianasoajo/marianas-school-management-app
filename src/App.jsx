@@ -20,7 +20,7 @@ function App() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">EduPlanner</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Professora Mariana</h1>
 
             {/* Language Toggle */}
             <button
@@ -34,10 +34,10 @@ function App() {
           </div>
 
           {/* Tab Navigation */}
-          <nav className="flex space-x-8 border-t border-gray-200">
+          <nav className="flex space-x-8 border-t border-gray-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab('general')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                 activeTab === 'general'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -46,24 +46,44 @@ function App() {
               {t('general_planning')}
             </button>
             <button
-              onClick={() => setActiveTab('presentation')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'presentation'
+              onClick={() => setActiveTab('summaries')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'summaries'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              {t('presentation')}
+              {t('summaries')}
             </button>
             <button
-              onClick={() => setActiveTab('oral')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'oral'
+              onClick={() => setActiveTab('selfassessment')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'selfassessment'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              {t('oral_evaluation')}
+              {t('daily_selfassessment')}
+            </button>
+            <button
+              onClick={() => setActiveTab('groups')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'groups'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {t('groups')}
+            </button>
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'students'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {t('students')}
             </button>
           </nav>
         </div>
@@ -77,15 +97,33 @@ function App() {
           </div>
         )}
 
-        {activeTab === 'presentation' && (
+        {activeTab === 'summaries' && (
           <div className="bg-white rounded-lg shadow p-6">
             <LessonPresentation />
           </div>
         )}
 
-        {activeTab === 'oral' && (
+        {activeTab === 'selfassessment' && (
           <div className="bg-white rounded-lg shadow p-6">
             <OralEvaluation />
+          </div>
+        )}
+
+        {activeTab === 'groups' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('groups')}</h2>
+            <p className="text-gray-600">
+              Groups management interface (Academic Years and School Forms CRUD) will be implemented here.
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'students' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('students')}</h2>
+            <p className="text-gray-600">
+              Students management interface (Student CRUD, enrollment modals, and guardian management) will be implemented here.
+            </p>
           </div>
         )}
       </main>
