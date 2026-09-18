@@ -5,6 +5,7 @@ import PlanningTable from './components/planning/PlanningTable'
 import LessonPresentation from './components/classroom/LessonPresentation'
 import OralEvaluation from './components/evaluation/OralEvaluation'
 import StudentsManager from './components/students/StudentsManager'
+import GroupsManager from './components/groups/GroupsManager'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -112,10 +113,7 @@ function App() {
 
         {activeTab === 'groups' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('groups')}</h2>
-            <p className="text-gray-600">
-              Groups management interface (Academic Years and School Forms CRUD) will be implemented here.
-            </p>
+            <GroupsManager />
           </div>
         )}
 
