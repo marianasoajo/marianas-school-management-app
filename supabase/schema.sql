@@ -35,6 +35,7 @@ CREATE TABLE student_enrollments (
   student_id UUID REFERENCES students(id) ON DELETE CASCADE,
   school_form_id UUID REFERENCES school_forms(id) ON DELETE RESTRICT,
   school_year_id UUID REFERENCES school_years(id) ON DELETE RESTRICT,
+  group_number INT, -- Student number within the group/class (e.g., #1, #2)
   created_at TIMESTAMPTZ DEFAULT NOW(),
   CONSTRAINT unique_student_year UNIQUE (student_id, school_year_id)
 );
