@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Globe } from 'lucide-react'
+import { Globe, LogOut } from 'lucide-react'
+import { supabase } from './lib/supabase'
+import Login from './components/auth/Login'
 import PlanningTable from './components/planning/PlanningTable'
 import LessonPresentation from './components/classroom/LessonPresentation'
 import StudentsManager from './components/students/StudentsManager'
@@ -9,10 +11,48 @@ import GroupsManager from './components/groups/GroupsManager'
 function App() {
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState('general')
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'pt' : 'en'
     i18n.changeLanguage(newLang)
+  }
+
+  // Check auth session on mount and listen for changes
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+  }
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
+  }
+
+  // Show login screen if not authenticated
+  if (!session) {
+    return <Login />
   }
 
   return (
@@ -23,15 +63,29 @@ function App() {
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900">Professora Mariana</h1>
 
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-              aria-label="Toggle language"
-            >
-              <Globe size={16} />
-              <span>{i18n.language.toUpperCase()}</span>
-            </button>
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-3">
+              {/* Language Toggle */}
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                aria-label="Toggle language"
+              >
+                <Globe size={16} />
+                <span>{i18n.language.toUpperCase()}</span>
+              </button>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+                aria-label={t('logout')}
+                title={t('logout')}
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline">{t('logout')}</span>
+              </button>
+            </div>
           </div>
 
           {/* Tab Navigation */}

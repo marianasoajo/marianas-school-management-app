@@ -179,7 +179,17 @@ const resources = {
       "validation_errors": "Validation errors found. Please fix highlighted rows.",
       "row": "Row",
       "error": "Error",
-      "missing_required": "Missing required field"
+      "missing_required": "Missing required field",
+      "login": "Login",
+      "logging_in": "Logging in...",
+      "login_subtitle": "Teacher Management & Classroom App",
+      "login_failed": "Invalid email or password. Please try again.",
+      "email": "Email",
+      "password": "Password",
+      "email_placeholder": "Enter your email",
+      "password_placeholder": "Enter your password",
+      "login_footer": "© 2026 Professora Mariana - All rights reserved",
+      "logout": "Logout"
     }
   },
   pt: {
@@ -359,7 +369,17 @@ const resources = {
       "validation_errors": "Erros de validação encontrados. Por favor corrija as linhas destacadas.",
       "row": "Linha",
       "error": "Erro",
-      "missing_required": "Campo obrigatório em falta"
+      "missing_required": "Campo obrigatório em falta",
+      "login": "Entrar",
+      "logging_in": "A entrar...",
+      "login_subtitle": "Gestão de Professores e Sala de Aula",
+      "login_failed": "Email ou password inválidos. Por favor tente novamente.",
+      "email": "Email",
+      "password": "Password",
+      "email_placeholder": "Introduza o seu email",
+      "password_placeholder": "Introduza a sua password",
+      "login_footer": "© 2026 Professora Mariana - Todos os direitos reservados",
+      "logout": "Sair"
     }
   }
 }
