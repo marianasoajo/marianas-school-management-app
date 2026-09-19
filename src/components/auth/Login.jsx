@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Loader2, AlertCircle, LogIn } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
-const SCHOOL_LOGO_URL = 'https://www.esmax.pt/images/logoaemax.png'
-
 export default function Login() {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
@@ -36,13 +34,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo Header */}
+        {/* Header */}
         <div className="text-center mb-8">
-          <img
-            src={SCHOOL_LOGO_URL}
-            alt="School Logo"
-            className="h-24 mx-auto mb-4 object-contain"
-          />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Professora Mariana
           </h1>

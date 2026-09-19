@@ -20,8 +20,6 @@ import {
 import { supabase } from '../../lib/supabase'
 import OralEvaluation from '../evaluation/OralEvaluation'
 
-const SCHOOL_LOGO_URL = 'https://www.esmax.pt/images/logoaemax.png'
-
 export default function LessonPresentation() {
   const { t, i18n } = useTranslation()
 
@@ -375,11 +373,6 @@ export default function LessonPresentation() {
       {/* Public Presentation View */}
       {currentLesson ? (
         <div className="bg-white border-2 border-gray-200 rounded-lg p-8 shadow-lg">
-          {/* School Logo Header */}
-          <div className="flex items-center justify-center mb-8">
-            <img src={SCHOOL_LOGO_URL} alt="School Logo" className="h-20 object-contain" />
-          </div>
-
           {/* Lesson Header Info */}
           <div className="grid grid-cols-2 gap-6 mb-8 text-lg">
             <div>
