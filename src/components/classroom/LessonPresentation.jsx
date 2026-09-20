@@ -20,7 +20,7 @@ import {
 import { supabase } from '../../lib/supabase'
 import OralEvaluation from '../evaluation/OralEvaluation'
 
-export default function LessonPresentation() {
+export default function LessonPresentation({ session }) {
   const { t, i18n } = useTranslation()
 
   // Data state
@@ -59,6 +59,7 @@ export default function LessonPresentation() {
 
   // Fetch school years and forms on mount
   useEffect(() => {
+    if (!session) return
     const fetchMetadata = async () => {
       const [yearsRes, formsRes] = await Promise.all([
         supabase.from('school_years').select('*').order('label', { ascending: false }),
@@ -69,14 +70,19 @@ export default function LessonPresentation() {
       if (formsRes.data) setSchoolForms(formsRes.data)
     }
     fetchMetadata()
-  }, [])
+  }, [session])
 
   // Fetch filtered lessons
   useEffect(() => {
+    if (!session) return
     fetchLessons()
-  }, [filterYearId, filterFormId, filterDate])
+  }, [filterYearId, filterFormId, filterDate, session])
 
   const fetchLessons = async () => {
+    if (!session) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
 

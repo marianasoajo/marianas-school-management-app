@@ -20,7 +20,7 @@ import {
 import * as XLSX from 'xlsx'
 import { supabase } from '../../lib/supabase'
 
-export default function StudentsManager() {
+export default function StudentsManager({ session }) {
   const { t } = useTranslation()
 
   // Data state
@@ -84,6 +84,7 @@ export default function StudentsManager() {
 
   // Fetch metadata on mount
   useEffect(() => {
+    if (!session) return
     const fetchMetadata = async () => {
       const [yearsRes, formsRes] = await Promise.all([
         supabase.from('school_years').select('*').order('label', { ascending: false }),
@@ -105,14 +106,19 @@ export default function StudentsManager() {
       }
     }
     fetchMetadata()
-  }, [])
+  }, [session])
 
   // Fetch students with enrollments and guardians
   useEffect(() => {
+    if (!session) return
     fetchStudents()
-  }, [filterYearId, filterFormId, searchQuery])
+  }, [filterYearId, filterFormId, searchQuery, session])
 
   const fetchStudents = async () => {
+    if (!session) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
 

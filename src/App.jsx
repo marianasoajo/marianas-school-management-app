@@ -138,25 +138,25 @@ function App() {
       <main className="py-8">
         {activeTab === 'general' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <PlanningTable />
+            <PlanningTable session={session} />
           </div>
         )}
 
         {activeTab === 'summaries' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <LessonPresentation />
+            <LessonPresentation session={session} />
           </div>
         )}
 
         {activeTab === 'groups' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <GroupsManager />
+            <GroupsManager session={session} />
           </div>
         )}
 
         {activeTab === 'students' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <StudentsManager />
+            <StudentsManager session={session} />
           </div>
         )}
       </main>

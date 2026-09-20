@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
-export default function GroupsManager() {
+export default function GroupsManager({ session }) {
   const { t } = useTranslation()
 
   // Active tab state
@@ -46,12 +46,13 @@ export default function GroupsManager() {
 
   // Fetch data on mount and tab change
   useEffect(() => {
+    if (!session) return
     if (activeTab === 'years') {
       fetchSchoolYears()
     } else {
       fetchSchoolForms()
     }
-  }, [activeTab])
+  }, [activeTab, session])
 
   // Fetch academic years
   const fetchSchoolYears = async () => {

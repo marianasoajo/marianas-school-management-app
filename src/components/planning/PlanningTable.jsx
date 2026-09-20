@@ -26,7 +26,7 @@ const COLUMNS = [
   { key: 'registers',          i18nKey: 'registers'           },
 ]
 
-export default function PlanningTable() {
+export default function PlanningTable({ session }) {
   const { t } = useTranslation()
 
   const [rows, setRows] = useState([])
@@ -37,6 +37,7 @@ export default function PlanningTable() {
 
   // ---- Fetch rows on mount ----
   const fetchRows = useCallback(async () => {
+    if (!session) return
     setLoading(true)
     setError(null)
     const { data, error: fetchError } = await supabase
@@ -52,7 +53,7 @@ export default function PlanningTable() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchRows() }, [fetchRows])
+  useEffect(() => { if (session) fetchRows() }, [fetchRows, session])
 
   // ---- Cell editing ----
   const handleCellChange = (rowIndex, field, value) => {
