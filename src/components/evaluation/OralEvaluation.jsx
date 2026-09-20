@@ -349,13 +349,6 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
                             </button>
                           ))}
                         </div>
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>1</span>
-                          <span>2</span>
-                          <span>3</span>
-                          <span>4</span>
-                          <span>5</span>
-                        </div>
                         <div className={`mt-3 p-3 border rounded-md text-center ${!isAttending ? 'bg-gray-100 border-gray-300' : 'bg-blue-100 border-blue-300'}`}>
                           <p className={`text-2xl font-bold ${!isAttending ? 'text-gray-500' : 'text-blue-900'}`}>
                             {evaluation.student_rating || 3}
@@ -389,7 +382,7 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
                             </button>
                           ))}
                         </div>
-                        <div className={`mt-3 p-3 border rounded-md text-center ${!isAttending ? 'bg-gray-100 border-gray-300' : 'bg-green-100 border-green-300'}`}>
+                        <div className="mt-3 p-3 border rounded-md text-center bg-green-100 border-green-300">
                           <p className={`text-2xl font-bold ${!isAttending ? 'text-gray-500' : 'text-green-900'}`}>
                             {evaluation.teacher_rating || 3}
                           </p>
