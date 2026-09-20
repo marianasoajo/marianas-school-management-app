@@ -434,107 +434,103 @@ export default function LessonPresentation({ session }) {
               return (
                 <div
                   key={lesson.id}
-                  className={`p-4 transition-colors hover:bg-gray-50 ${
+                  className={`border-b border-gray-200 last:border-0 transition-colors ${
                     lesson.id === selectedLessonId ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    {/* Lesson Info - clickable to expand */}
-                    <div
-                      onClick={() => setSelectedLessonId(lesson.id === selectedLessonId ? null : lesson.id)}
-                      className="flex-1 cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-base font-bold text-gray-900">
-                          {formatLessonNumber(lesson.lesson_number)}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {new Date(lesson.date).toLocaleDateString(i18n.language, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {formLabel} • {yearLabel}
-                        </span>
-                      </div>
-                      {hasNotes && (
-                        <div className="flex items-start gap-2 mt-2 p-2 bg-purple-50 rounded text-sm">
-                          <StickyNote size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-purple-800 line-clamp-2">{lesson.teacher_notes}</p>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      {/* Lesson Info - clickable to expand */}
+                      <div
+                        onClick={() => setSelectedLessonId(lesson.id === selectedLessonId ? null : lesson.id)}
+                        className="flex-1 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-base font-bold text-gray-900">
+                            {formatLessonNumber(lesson.lesson_number)}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {new Date(lesson.date).toLocaleDateString(i18n.language, {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                          <span className="text-xs text-gray-500">—</span>
+                          {!yearLabel ? '' : <span className="text-xs text-gray-500">{yearLabel}</span>}
+                          <span className="text-xs text-gray-500">•</span>
+                          {!formLabel ? '' : <span className="text-xs text-gray-500">{formLabel}</span>}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-1 flex-shrink-0">
-                      <button
-                        onClick={() => {
-                          setCurrentLesson(lesson)
-                          setShowStudentView(true)
-                        }}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
-                        aria-label={t('student_view')}
-                        title={t('student_view')}
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        onClick={() => openEvaluationModal(lesson.id)}
-                        className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-colors"
-                        aria-label={t('evaluation')}
-                        title={t('evaluation')}
-                      >
-                        <ClipboardCheck size={16} />
-                      </button>
-                      <button
-                        onClick={() => openLessonModal(lesson)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                        aria-label={t('edit_lesson')}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteLesson(lesson.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                        aria-label={t('delete_lesson')}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                        {/* Summary - always visible */}
+                        {lesson.summary && (
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-2 line-clamp-2">
+                            {lesson.summary}
+                          </p>
+                        )}
+
+                        {/* Attention Box - always visible */}
+                        {lesson.attention_box && (
+                          <div className="mb-2 p-2 bg-yellow-50 border-l-3 border-yellow-400 rounded">
+                            <p className="text-xs text-yellow-800 line-clamp-2">
+                              ⚠️ {lesson.attention_box}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Notes - only for selected lesson */}
+                        {lesson.id === selectedLessonId && hasNotes && (
+                          <div className="flex items-start gap-2 mt-2 p-2 bg-purple-50 rounded text-sm">
+                            <StickyNote size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />
+                            <p className="text-purple-800 whitespace-pre-wrap">{lesson.teacher_notes}</p>
+                          </div>
+                        )}
+                        {lesson.id === selectedLessonId && !hasNotes && (
+                          <div className="flex items-start gap-2 mt-2 p-2 bg-gray-50 rounded text-sm text-gray-500">
+                            <StickyNote size={14} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                            <p>{t('no_notes')}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-col gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            setCurrentLesson(lesson)
+                            setShowStudentView(true)
+                          }}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
+                          aria-label={t('student_view')}
+                          title={t('student_view')}
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => openEvaluationModal(lesson.id)}
+                          className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                          aria-label={t('evaluation')}
+                          title={t('evaluation')}
+                        >
+                          <ClipboardCheck size={16} />
+                        </button>
+                        <button
+                          onClick={() => openLessonModal(lesson)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                          aria-label={t('edit_lesson')}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLesson(lesson.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                          aria-label={t('delete_lesson')}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Expanded Details */}
-                  {lesson.id === selectedLessonId && currentLesson && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                      {/* Subject */}
-                      <div>
-                        <span className="text-sm font-semibold text-gray-700">{t('subject')}: </span>
-                        <span className="text-sm text-gray-900">{currentLesson.subject}</span>
-                      </div>
-
-                      {/* Summary */}
-                      {currentLesson.summary && (
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('summary')}:</h4>
-                          <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                            {currentLesson.summary}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Attention Box */}
-                      {currentLesson.attention_box && (
-                        <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                          <h4 className="text-sm font-semibold text-yellow-900 mb-1">{t('attention')}:</h4>
-                          <p className="text-sm text-yellow-800 whitespace-pre-wrap">
-                            {currentLesson.attention_box}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               )
             })
@@ -542,54 +538,57 @@ export default function LessonPresentation({ session }) {
         </div>
       </div>
 
-      {/* Student Presentation Modal */}
+      {/* Student Presentation Modal - Full Screen */}
       {showStudentView && currentLesson && (
-        <div className="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-white z-50 flex flex-col">
+          {/* Close Button */}
+          <button
+            onClick={() => setShowStudentView(false)}
+            className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors z-10"
+            aria-label={t('close')}
+          >
+            <X size={24} />
+          </button>
+
+          {/* Content - Centered for projection */}
+          <div className="flex-1 flex flex-col items-center justify-center px-8 py-12 space-y-8">
+            {/* Lesson Number */}
+            <div className="text-center">
+              <h1 className="text-5xl font-bold text-gray-900">
                 {formatLessonNumber(currentLesson.lesson_number)}
-              </h2>
-              <button
-                onClick={() => setShowStudentView(false)}
-                className="p-1 text-gray-500 hover:text-gray-700 rounded transition-colors"
-              >
-                <X size={20} />
-              </button>
+              </h1>
             </div>
 
-            {/* Content */}
-            <div className="px-6 py-6 space-y-6">
-              {/* Date */}
-              <div className="text-center">
-                <span className="text-lg text-gray-600">
-                  {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
+            {/* Date */}
+            <div className="text-center">
+              <span className="text-2xl text-gray-600">
+                {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+            </div>
 
-              {/* Summary */}
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{t('summary')}</h3>
-                <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
-                  {currentLesson.summary || '—'}
+            {/* Summary */}
+            {currentLesson.summary && (
+              <div className="w-full max-w-3xl text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">{t('summary')}</h2>
+                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {currentLesson.summary}
                 </p>
               </div>
+            )}
 
-              {/* Attention Box */}
-              {currentLesson.attention_box && (
-                <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                  <h3 className="text-lg font-bold text-yellow-900 mb-2">{t('attention')}</h3>
-                  <p className="text-base text-yellow-800 whitespace-pre-wrap">
-                    {currentLesson.attention_box}
-                  </p>
-                </div>
-              )}
-            </div>
+            {/* Attention Box */}
+            {currentLesson.attention_box && (
+              <div className="w-full max-w-3xl p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                <h2 className="text-xl font-bold text-yellow-900 mb-2">{t('attention')}</h2>
+                <p className="text-lg text-yellow-800 whitespace-pre-wrap">
+                  {currentLesson.attention_box}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
