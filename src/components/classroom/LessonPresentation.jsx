@@ -596,9 +596,9 @@ export default function LessonPresentation({ session }) {
 
             {/* Summary */}
             {currentLesson.summary && (
-              <div className="w-full max-w-3xl text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">{t('summary')}</h2>
-                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap">
+              <div className="w-full max-w-3xl">
+                <h2 className="text-2xl font-bold text-gray-900 mb-3 text-left">{t('summary')}</h2>
+                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap text-left">
                   {currentLesson.summary}
                 </p>
               </div>
@@ -607,8 +607,8 @@ export default function LessonPresentation({ session }) {
             {/* Attention Box */}
             {currentLesson.attention_box && (
               <div className="w-full max-w-3xl p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                <h2 className="text-xl font-bold text-yellow-900 mb-2">{t('attention')}</h2>
-                <p className="text-lg text-yellow-800 whitespace-pre-wrap">
+                <h2 className="text-xl font-bold text-yellow-900 mb-2 text-left">{t('attention')}</h2>
+                <p className="text-lg text-yellow-800 whitespace-pre-wrap text-left">
                   {currentLesson.attention_box}
                 </p>
               </div>
