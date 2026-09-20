@@ -10,7 +10,7 @@ import GroupsManager from './components/groups/GroupsManager'
 
 function App() {
   const { t, i18n } = useTranslation()
-  const [activeTab, setActiveTab] = useState('general')
+  const [activeTab, setActiveTab] = useState('summaries')
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 

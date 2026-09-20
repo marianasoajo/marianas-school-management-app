@@ -15,7 +15,8 @@ import {
   Edit,
   Trash2,
   Filter,
-  ClipboardCheck
+  ClipboardCheck,
+  Copy
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import OralEvaluation from '../evaluation/OralEvaluation'
@@ -42,8 +43,16 @@ export default function LessonPresentation({ session }) {
   const [showNotesModal, setShowNotesModal] = useState(false)
   const [showLessonModal, setShowLessonModal] = useState(false)
   const [showEvaluationModal, setShowEvaluationModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [evaluationLessonId, setEvaluationLessonId] = useState(null)
   const [editingLesson, setEditingLesson] = useState(null)
+
+  // Import state
+  const [importSourceYearId, setImportSourceYearId] = useState('')
+  const [importSourceFormId, setImportSourceFormId] = useState('')
+  const [importTargetFormIds, setImportTargetFormIds] = useState([])
+  const [importing, setImporting] = useState(false)
+  const [importPreview, setImportPreview] = useState([])
 
   // Form state
   const [formData, setFormData] = useState({
@@ -412,6 +421,21 @@ export default function LessonPresentation({ session }) {
             <Plus size={16} />
             {t('add_lesson')}
           </button>
+          <button
+            onClick={() => {
+              // Set import source to current filters
+              setImportSourceYearId(filterYearId)
+              setImportSourceFormId(filterFormId)
+              // Reset target forms
+              setImportTargetFormIds([])
+              // Show import modal
+              setShowImportModal(true)
+            }}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            <Copy size={16} />
+            {t('import_summaries')}
+          </button>
         </div>
       </div>
 
@@ -740,6 +764,157 @@ export default function LessonPresentation({ session }) {
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
               >
                 {editingLesson ? t('update_lesson') : t('create_lesson')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Summaries Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">{t('import_summaries')}</h2>
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="p-1 text-gray-500 hover:text-gray-700 rounded transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              <p className="text-sm text-gray-600">
+                {t('import_summaries_description')}
+              </p>
+
+              {/* Source Selection */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-700">{t('source_group')}</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <select
+                    value={importSourceYearId}
+                    onChange={(e) => setImportSourceYearId(e.target.value)}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">{t('select_year')}</option>
+                    {schoolYears.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={importSourceFormId}
+                    onChange={(e) => setImportSourceFormId(e.target.value)}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">{t('select_group')}</option>
+                    {schoolForms.map((form) => (
+                      <option key={form.id} value={form.id}>
+                        {form.year_level} {form.class_section}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Target Selection */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-700">{t('target_groups')}</h3>
+                <div className="border border-gray-300 rounded-md p-3 max-h-48 overflow-y-auto">
+                  {schoolForms
+                    .filter((form) => form.id !== importSourceFormId)
+                    .map((form) => (
+                      <label key={form.id} className="flex items-center gap-2 py-1 hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={importTargetFormIds.includes(form.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setImportTargetFormIds([...importTargetFormIds, form.id])
+                            } else {
+                              setImportTargetFormIds(importTargetFormIds.filter((id) => id !== form.id))
+                            }
+                          }}
+                          className="w-4 h-4 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          {form.year_level} {form.class_section}
+                        </span>
+                      </label>
+                    ))}
+                </div>
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md">
+                  <AlertCircle size={16} />
+                  {error}
+                </div>
+              )}
+            </div>
+
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end gap-3">
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                onClick={async () => {
+                  if (!importSourceYearId || !importSourceFormId || importTargetFormIds.length === 0) {
+                    setError(t('select_source_and_targets'))
+                    return
+                  }
+
+                  setImporting(true)
+                  setError(null)
+
+                  try {
+                    // Fetch lessons from source
+                    const { data: sourceLessons, error: fetchError } = await supabase
+                      .from('lessons')
+                      .select('*')
+                      .eq('school_year_id', importSourceYearId)
+                      .eq('school_form_id', importSourceFormId)
+                      .order('lesson_number', { ascending: true })
+
+                    if (fetchError) throw fetchError
+
+                    // Create copies for each target group
+                    const copies = []
+                    for (const targetFormId of importTargetFormIds) {
+                      for (const lesson of sourceLessons) {
+                        const { id, created_at, ...lessonData } = lesson
+                        copies.push({
+                          ...lessonData,
+                          school_form_id: targetFormId,
+                          school_year_id: importSourceYearId // Keep same year
+                        })
+                      }
+                    }
+
+                    // Insert all copies
+                    const { error: insertError } = await supabase.from('lessons').insert(copies)
+
+                    if (insertError) throw insertError
+
+                    setShowImportModal(false)
+                    setImportTargetFormIds([])
+                    fetchLessons()
+                  } catch (err) {
+                    setError(err.message)
+                  } finally {
+                    setImporting(false)
+                  }
+                }}
+                disabled={importing || !importSourceYearId || !importSourceFormId || importTargetFormIds.length === 0}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              >
+                {importing && <Loader2 className="animate-spin" size={16} />}
+                {t('import')}
               </button>
             </div>
           </div>

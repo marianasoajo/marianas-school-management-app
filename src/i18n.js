@@ -189,7 +189,18 @@ const resources = {
       "email_placeholder": "Enter your email",
       "password_placeholder": "Enter your password",
       "login_footer": "© 2026 Professora Mariana - All rights reserved",
-      "logout": "Logout"
+      "logout": "Logout",
+      "import_summaries": "Import Summaries",
+      "import_summaries_description": "Copy all lessons from one group to multiple other groups. Select the source and target groups below.",
+      "source_group": "Source Group",
+      "target_groups": "Target Groups (select one or more)",
+      "select_year": "Select Year",
+      "select_group": "Select Group",
+      "select_source_and_targets": "Please select source year, source group, and at least one target group.",
+      "import": "Import",
+      "student_view": "Student View",
+      "evaluation": "Evaluation",
+      "no_notes": "No notes for this lesson"
     }
   },
   pt: {

@@ -333,16 +333,22 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
                         {t('column_a')} — {t('student_self')}
                       </h4>
                       <div className="space-y-2">
-                        <input
-                          type="range"
-                          min="1"
-                          max="5"
-                          step="1"
-                          value={evaluation.student_rating || 3}
-                          onChange={(e) => handleRatingChange(evalIndex, 'student_rating', e.target.value)}
-                          disabled={!isAttending}
-                          className={`w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600 ${!isAttending ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        />
+                        <div className="flex justify-center space-x-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              onClick={() => handleRatingChange(evalIndex, 'student_rating', star)}
+                              disabled={!isAttending}
+                              className={`w-8 h-8 flex items-center justify-center text-yellow-400 hover:text-yellow-500 transition-colors ${
+                                !isAttending ? 'opacity-50 cursor-not-allowed' : ''
+                              } ${evaluation.student_rating >= star ? 'text-yellow-500' : 'text-yellow-300'}`}
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.88-1.874a1 1 0 00-1.175 0l-2.88 1.874c-.784.57-1.838-.197-1.539-1.118l1.07-3.292c-.3-.921-.755-1.688-1.54-1.118l-2.8 2.034a1 1 0 00-.588-1.81l3.462-.969c.969 0 1.371-.24.95-.69z"></path>
+                              </svg>
+                            </button>
+                          ))}
+                        </div>
                         <div className="flex justify-between text-xs text-gray-500">
                           <span>1</span>
                           <span>2</span>
@@ -367,22 +373,21 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
                         {t('column_b')} — {t('teacher_verdict')}
                       </h4>
                       <div className="space-y-2">
-                        <input
-                          type="range"
-                          min="1"
-                          max="5"
-                          step="1"
-                          value={evaluation.teacher_rating || 3}
-                          onChange={(e) => handleRatingChange(evalIndex, 'teacher_rating', e.target.value)}
-                          disabled={!isAttending}
-                          className={`w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer accent-green-600 ${!isAttending ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        />
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>1</span>
-                          <span>2</span>
-                          <span>3</span>
-                          <span>4</span>
-                          <span>5</span>
+                        <div className="flex justify-center space-x-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              onClick={() => handleRatingChange(evalIndex, 'teacher_rating', star)}
+                              disabled={!isAttending}
+                              className={`w-8 h-8 flex items-center justify-center text-green-400 hover:text-green-500 transition-colors ${
+                                !isAttending ? 'opacity-50 cursor-not-allowed' : ''
+                              } ${evaluation.teacher_rating >= star ? 'text-green-500' : 'text-green-300'}`}
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.88-1.874a1 1 0 00-1.175 0l-2.88 1.874c-.784.57-1.838-.197-1.539-1.118l1.07-3.292c-.3-.921-.755-1.688-1.54-1.118l-2.8 2.034a1 1 0 00-.588-1.81l3.462-.969c.969 0 1.371-.24.95-.69z"></path>
+                              </svg>
+                            </button>
+                          ))}
                         </div>
                         <div className={`mt-3 p-3 border rounded-md text-center ${!isAttending ? 'bg-gray-100 border-gray-300' : 'bg-green-100 border-green-300'}`}>
                           <p className={`text-2xl font-bold ${!isAttending ? 'text-gray-500' : 'text-green-900'}`}>
