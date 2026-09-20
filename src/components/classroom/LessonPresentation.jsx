@@ -611,15 +611,15 @@ export default function LessonPresentation({ session }) {
           {/* Content - Centered for projection */}
           <div className="flex-1 flex flex-col items-center justify-center px-8 py-12 space-y-8">
             {/* Lesson Number */}
-            <div className="text-left">
-              <h1 className="text-5xl font-bold text-gray-900">
+            <div className="w-full max-w-3xl">
+              <h1 className="text-5xl font-bold text-gray-900 text-left">
                 {formatLessonNumber(currentLesson.lesson_number)}
               </h1>
             </div>
 
             {/* Date */}
-            <div className="text-left">
-              <span className="text-2xl text-gray-600">
+            <div className="w-full max-w-3xl">
+              <span className="text-2xl text-gray-600 text-left">
                 {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
                   year: 'numeric',
                   month: 'long',
@@ -1057,14 +1057,14 @@ export default function LessonPresentation({ session }) {
         </div>
       )}
 
-      {/* Teacher Notes FAB */}
+      {/* Student View FAB */}
       {currentLesson && (
         <button
-          onClick={() => setShowNotesModal(true)}
-          className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-purple-600 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-10"
+          onClick={() => setShowStudentView(true)}
+          className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-full shadow-lg hover:bg-green-700 transition-colors z-10"
         >
-          <StickyNote size={18} />
-          {t('teacher_notes')}
+          <Eye size={18} />
+          {t('student_view')}
         </button>
       )}
 
