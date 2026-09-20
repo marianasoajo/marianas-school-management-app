@@ -133,7 +133,7 @@ export default function LessonPresentation({ session }) {
         school_years (label),
         school_forms (year_level, class_section)
       `)
-      .order('date', { ascending: false })
+      .order('date', { ascending: true })
 
     if (filterYearId) query = query.eq('school_year_id', filterYearId)
     if (filterFormId) query = query.eq('school_form_id', filterFormId)
