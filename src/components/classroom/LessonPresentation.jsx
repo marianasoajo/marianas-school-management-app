@@ -50,6 +50,8 @@ export default function LessonPresentation({ session }) {
   // Import state
   const [importSourceYearId, setImportSourceYearId] = useState('')
   const [importSourceFormId, setImportSourceFormId] = useState('')
+  const [importSourceLessonId, setImportSourceLessonId] = useState('')
+  const [importSourceLesson, setImportSourceLesson] = useState(null)
   const [importTargetFormIds, setImportTargetFormIds] = useState([])
   const [importing, setImporting] = useState(false)
   const [importPreview, setImportPreview] = useState([])
@@ -86,6 +88,40 @@ export default function LessonPresentation({ session }) {
     if (!session) return
     fetchLessons()
   }, [filterYearId, filterFormId, filterDate, session])
+
+  // Fetch lessons for import source when year or form changes
+  useEffect(() => {
+    if (!importSourceYearId || !importSourceFormId) {
+      setImportSourceLessonId('')
+      setImportSourceLesson(null)
+      return
+    }
+
+    const fetchImportSourceLessons = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('school_year_id', importSourceYearId)
+          .eq('school_form_id', importSourceFormId)
+          .order('lesson_number', { ascending: true })
+
+        if (error) throw error
+        // Lessons are fetched in the main fetchLessons and stored in lessons state
+        // We don't need to store them separately, just ensure we have the right lesson selected
+        if (importSourceLessonId && lessons.length > 0) {
+          const lesson = lessons.find(l => l.id === importSourceLessonId)
+          if (lesson) {
+            setImportSourceLesson(lesson)
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching import source lessons:', err)
+      }
+    }
+
+    fetchImportSourceLessons()
+  }, [importSourceYearId, importSourceFormId, lessons])
 
   const fetchLessons = async () => {
     if (!session) {
@@ -426,6 +462,9 @@ export default function LessonPresentation({ session }) {
               // Set import source to current filters
               setImportSourceYearId(filterYearId)
               setImportSourceFormId(filterFormId)
+              // Set import source to selected lesson
+              setImportSourceLessonId(selectedLessonId)
+              setImportSourceLesson(currentLesson)
               // Reset target forms
               setImportTargetFormIds([])
               // Show import modal
@@ -790,11 +829,17 @@ export default function LessonPresentation({ session }) {
 
               {/* Source Selection */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-700">{t('source_group')}</h3>
-                <div className="grid grid-cols-2 gap-3">
+                <h3 className="text-sm font-semibold text-gray-700">{t('source_lesson')}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <select
                     value={importSourceYearId}
-                    onChange={(e) => setImportSourceYearId(e.target.value)}
+                    onChange={(e) => {
+                      setImportSourceYearId(e.target.value)
+                      // Reset form and lesson when year changes
+                      setImportSourceFormId('')
+                      setImportSourceLessonId('')
+                      setImportSourceLesson(null)
+                    }}
                     className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">{t('select_year')}</option>
@@ -806,7 +851,12 @@ export default function LessonPresentation({ session }) {
                   </select>
                   <select
                     value={importSourceFormId}
-                    onChange={(e) => setImportSourceFormId(e.target.value)}
+                    onChange={(e) => {
+                      setImportSourceFormId(e.target.value)
+                      // Reset lesson when form changes
+                      setImportSourceLessonId('')
+                      setImportSourceLesson(null)
+                    }}
                     className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">{t('select_group')}</option>
@@ -816,6 +866,60 @@ export default function LessonPresentation({ session }) {
                       </option>
                     ))}
                   </select>
+                  <select
+                    value={importSourceLessonId}
+                    onChange={(e) => {
+                      const lessonId = e.target.value
+                      setImportSourceLessonId(lessonId)
+                      // Find lesson in current lessons data
+                      const lesson = lessons.find(l => l.id === lessonId)
+                      setImportSourceLesson(lesson || null)
+                    }}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                    disabled={!importSourceYearId || !importSourceFormId}
+                  >
+                    <option value="">{t('select_lesson')}</option>
+                    {lessons
+                      .filter(
+                        (lesson) =>
+                          lesson.school_year_id === importSourceYearId &&
+                          lesson.school_form_id === importSourceFormId
+                      )
+                      .map((lesson) => (
+                        <option
+                          key={lesson.id}
+                          value={lesson.id}
+                        >
+                          {formatLessonNumber(lesson.lesson_number)} - {lesson.subject}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Source Lesson */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-700">{t('source_lesson')}</h3>
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+                  {importSourceLesson ? (
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {formatLessonNumber(importSourceLesson.lesson_number)} - {importSourceLesson.subject}
+                      </p>
+                      <p className="text-xs text-gray-500">{new Date(importSourceLesson.date).toLocaleDateString()}</p>
+                      <button
+                        onClick={() => {
+                          setImportSourceLessonId('')
+                          setImportSourceLesson(null)
+                        }}
+                        className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
+                      >
+                        {t('clear') || 'Clear'}
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">{t('no_source_lesson') || 'Select a source group and lesson above'}</p>
+                  )}
                 </div>
               </div>
 
@@ -864,8 +968,8 @@ export default function LessonPresentation({ session }) {
               </button>
               <button
                 onClick={async () => {
-                  if (!importSourceYearId || !importSourceFormId || importTargetFormIds.length === 0) {
-                    setError(t('select_source_and_targets'))
+                  if (!importSourceLessonId || importTargetFormIds.length === 0) {
+                    setError(t('select_lesson_and_targets') || 'Please select a source lesson and at least one target group.')
                     return
                   }
 
@@ -873,27 +977,25 @@ export default function LessonPresentation({ session }) {
                   setError(null)
 
                   try {
-                    // Fetch lessons from source
-                    const { data: sourceLessons, error: fetchError } = await supabase
+                    // Fetch specific source lesson
+                    const { data: sourceLesson, error: fetchError } = await supabase
                       .from('lessons')
                       .select('*')
-                      .eq('school_year_id', importSourceYearId)
-                      .eq('school_form_id', importSourceFormId)
-                      .order('lesson_number', { ascending: true })
+                      .eq('id', importSourceLessonId)
+                      .single()
 
                     if (fetchError) throw fetchError
+                    if (!sourceLesson) throw new Error('Source lesson not found')
 
-                    // Create copies for each target group
+                    // Create copies for each target group, using same lesson number
                     const copies = []
                     for (const targetFormId of importTargetFormIds) {
-                      for (const lesson of sourceLessons) {
-                        const { id, created_at, ...lessonData } = lesson
-                        copies.push({
-                          ...lessonData,
-                          school_form_id: targetFormId,
-                          school_year_id: importSourceYearId // Keep same year
-                        })
-                      }
+                      const { id, created_at, ...lessonData } = sourceLesson
+                      copies.push({
+                        ...lessonData,
+                        school_form_id: targetFormId,
+                        school_year_id: sourceLesson.school_year_id // Keep same year
+                      })
                     }
 
                     // Insert all copies
@@ -903,6 +1005,8 @@ export default function LessonPresentation({ session }) {
 
                     setShowImportModal(false)
                     setImportTargetFormIds([])
+                    setImportSourceLessonId('')
+                    setImportSourceLesson(null)
                     fetchLessons()
                   } catch (err) {
                     setError(err.message)
@@ -910,7 +1014,7 @@ export default function LessonPresentation({ session }) {
                     setImporting(false)
                   }
                 }}
-                disabled={importing || !importSourceYearId || !importSourceFormId || importTargetFormIds.length === 0}
+                disabled={importing || !importSourceLessonId || importTargetFormIds.length === 0}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
               >
                 {importing && <Loader2 className="animate-spin" size={16} />}
