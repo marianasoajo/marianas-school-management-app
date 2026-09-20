@@ -1,23 +1,18 @@
-import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
-  ChevronRight,
-  Eye,
-  EyeOff,
-  FileText,
-  Link as LinkIcon,
-  Paperclip,
-  StickyNote,
-  X,
-  Loader2,
   AlertCircle,
-  Plus,
-  Edit,
-  Trash2,
-  Filter,
   ClipboardCheck,
-  Copy
+  Copy,
+  Edit,
+  Eye,
+  Filter,
+  Loader2,
+  Plus,
+  StickyNote,
+  Trash2,
+  X
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import OralEvaluation from '../evaluation/OralEvaluation'
 
@@ -616,14 +611,14 @@ export default function LessonPresentation({ session }) {
           {/* Content - Centered for projection */}
           <div className="flex-1 flex flex-col items-center justify-center px-8 py-12 space-y-8">
             {/* Lesson Number */}
-            <div className="text-center">
+            <div className="text-left">
               <h1 className="text-5xl font-bold text-gray-900">
                 {formatLessonNumber(currentLesson.lesson_number)}
               </h1>
             </div>
 
             {/* Date */}
-            <div className="text-center">
+            <div className="text-left">
               <span className="text-2xl text-gray-600">
                 {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
                   year: 'numeric',
