@@ -46,7 +46,7 @@ const resources = {
       "source_lesson": "Source Lesson",
       "no_source_lesson": "No source lesson selected",
       "select_lesson_and_targets": "Please select a source lesson and at least one target group.",
-      "clear": "Clear"
+      "clear": "Clear",
       "lesson_single": "Lesson nº",
       "lesson_double": "Lesson nº {{first}} and {{second}}",
       "step_by_step": "Step-by-Step Guide",
@@ -251,7 +251,7 @@ const resources = {
       "source_lesson": "Lição de Origem",
       "no_source_lesson": "Nenhuma lição de origem selecionada",
       "select_lesson_and_targets": "Por favor, selecione uma lição de origem e pelo menos um grupo de destino.",
-      "clear": "Limpar"
+      "clear": "Limpar",
       "lesson_single": "Lição nº",
       "lesson_double": "Lição nº {{first}} e {{second}}",
       "step_by_step": "Guia Passo-a-Passo",
@@ -401,6 +401,15 @@ const resources = {
       "logout": "Sair",
       "import_summaries": "Importar Summários",
       "import_summaries_description": "Copiar sumário para outros grupos. Selecione o grupo de origem e os grupos de destino abaixo.",
+      "source_group": "Grupo de origem",
+      "target_groups": "Grupos de destino (selecione um ou mais)",
+      "select_year": "Selecionar Ano",
+      "select_group": "Selecionar Grupo",
+      "select_source_and_targets": "Por favor selecione o ano de origem, o grupo de origem e pelo menos um grupo de destino.",
+      "import": "Importar",
+      "student_view": "Vista do Aluno",
+      "evaluation": "Avaliação",
+      "no_notes": "Não há notas para esta lição"
     }
   }
 }
