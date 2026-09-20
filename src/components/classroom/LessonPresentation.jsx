@@ -29,6 +29,7 @@ export default function LessonPresentation({ session }) {
   const [schoolForms, setSchoolForms] = useState([])
   const [selectedLessonId, setSelectedLessonId] = useState(null)
   const [currentLesson, setCurrentLesson] = useState(null)
+  const [showStudentView, setShowStudentView] = useState(false)
 
   // Filter state
   const [filterYearId, setFilterYearId] = useState('')
@@ -38,7 +39,6 @@ export default function LessonPresentation({ session }) {
   // UI state
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [showTeacherPanel, setShowTeacherPanel] = useState(false)
   const [showNotesModal, setShowNotesModal] = useState(false)
   const [showLessonModal, setShowLessonModal] = useState(false)
   const [showEvaluationModal, setShowEvaluationModal] = useState(false)
@@ -137,7 +137,7 @@ export default function LessonPresentation({ session }) {
   }, [selectedLessonId])
 
   // Open create/edit modal
-  const openLessonModal = (lesson = null) => {
+  const openLessonModal = async (lesson = null) => {
     if (lesson) {
       setEditingLesson(lesson)
       setFormData({
@@ -151,12 +151,32 @@ export default function LessonPresentation({ session }) {
         teacher_notes: lesson.teacher_notes || ''
       })
     } else {
+      // Auto-calculate next lesson number
+      let nextLessonNumber = '1'
+      if (filterYearId && filterFormId) {
+        const { data } = await supabase
+          .from('lessons')
+          .select('lesson_number')
+          .eq('school_year_id', filterYearId)
+          .eq('school_form_id', filterFormId)
+          .order('lesson_number', { ascending: false })
+          .limit(1)
+
+        if (data && data.length > 0) {
+          const lastNumber = data[0].lesson_number
+          const match = lastNumber.match(/(\d+)/)
+          if (match) {
+            nextLessonNumber = String(parseInt(match[1]) + 1)
+          }
+        }
+      }
+
       setEditingLesson(null)
       setFormData({
         school_year_id: filterYearId || '',
         school_form_id: filterFormId || '',
         subject: '',
-        lesson_number: '',
+        lesson_number: nextLessonNumber,
         date: filterDate || '',
         summary: '',
         attention_box: '',
@@ -199,23 +219,105 @@ export default function LessonPresentation({ session }) {
     }
   }
 
-  // Delete lesson
+  // Delete lesson and renumber subsequent lessons
   const handleDeleteLesson = async (lessonId) => {
     if (!confirm(t('confirm_delete'))) return
 
-    const { error: deleteError } = await supabase
-      .from('lessons')
-      .delete()
-      .eq('id', lessonId)
+    try {
+      // Get the lesson being deleted to know which year/form/number
+      const { data: lessonToDelete, error: fetchError } = await supabase
+        .from('lessons')
+        .select('lesson_number, school_year_id, school_form_id')
+        .eq('id', lessonId)
+        .single()
 
-    if (deleteError) {
-      setError(deleteError.message)
-    } else {
+      if (fetchError) {
+        setError(fetchError.message)
+        return
+      }
+
+      // Extract the numeric lesson number
+      const match = lessonToDelete.lesson_number.match(/(\d+)/)
+      if (!match) {
+        // If lesson number doesn't contain a number, just delete
+        const { error: deleteError } = await supabase
+          .from('lessons')
+          .delete()
+          .eq('id', lessonId)
+
+        if (deleteError) {
+          setError(deleteError.message)
+        } else {
+          if (selectedLessonId === lessonId) {
+            setSelectedLessonId(null)
+            setCurrentLesson(null)
+          }
+          fetchLessons()
+        }
+        return
+      }
+
+      const deletedNumber = parseInt(match[1])
+
+      // Delete the lesson
+      const { error: deleteError } = await supabase
+        .from('lessons')
+        .delete()
+        .eq('id', lessonId)
+
+      if (deleteError) {
+        setError(deleteError.message)
+        return
+      }
+
+      // Get all lessons with higher numbers in the same year/form
+      const { data: subsequentLessons, error: fetchSubsequentError } = await supabase
+        .from('lessons')
+        .select('id, lesson_number')
+        .eq('school_year_id', lessonToDelete.school_year_id)
+        .eq('school_form_id', lessonToDelete.school_form_id)
+
+      if (fetchSubsequentError) {
+        setError(fetchSubsequentError.message)
+        if (selectedLessonId === lessonId) {
+          setSelectedLessonId(null)
+          setCurrentLesson(null)
+        }
+        fetchLessons()
+        return
+      }
+
+      // Renumber lessons that come after the deleted one
+      const updates = subsequentLessons
+        .map(lesson => {
+          const lessonMatch = lesson.lesson_number.match(/(\d+)/)
+          if (!lessonMatch) return null
+          const lessonNum = parseInt(lessonMatch[1])
+          if (lessonNum > deletedNumber) {
+            return {
+              id: lesson.id,
+              new_number: String(lessonNum - 1)
+            }
+          }
+          return null
+        })
+        .filter(Boolean)
+
+      // Update each lesson's number
+      for (const update of updates) {
+        await supabase
+          .from('lessons')
+          .update({ lesson_number: update.new_number })
+          .eq('id', update.id)
+      }
+
       if (selectedLessonId === lessonId) {
         setSelectedLessonId(null)
         setCurrentLesson(null)
       }
       fetchLessons()
+    } catch (err) {
+      setError(err.message)
     }
   }
 
@@ -304,7 +406,7 @@ export default function LessonPresentation({ session }) {
           />
 
           <button
-            onClick={()=> openLessonModal()}
+            onClick={() => openLessonModal()}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
             <Plus size={16} />
@@ -313,223 +415,180 @@ export default function LessonPresentation({ session }) {
         </div>
       </div>
 
-      {/* Lesson List (Teacher Panel) */}
-      {showTeacherPanel && (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">{t('past_future_summary')}</h3>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {lessons.map((lesson) => {
+      {/* Teacher View - Lesson List (Default View) */}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900">{t('past_future_summary')}</h3>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {lessons.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">{t('no_lessons')}</div>
+          ) : (
+            lessons.map((lesson) => {
               const yearLabel = lesson.school_years?.label || ''
               const formLabel = lesson.school_forms
                 ? `${lesson.school_forms.year_level} ${lesson.school_forms.class_section}`
                 : ''
+              const hasNotes = lesson.teacher_notes && lesson.teacher_notes.trim().length > 0
+
               return (
                 <div
                   key={lesson.id}
-                  className={`p-3 rounded-lg border transition-colors ${
-                    lesson.id === selectedLessonId
-                      ? 'bg-blue-100 border-blue-300'
-                      : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+                  className={`p-4 transition-colors hover:bg-gray-50 ${
+                    lesson.id === selectedLessonId ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-4">
+                    {/* Lesson Info - clickable to expand */}
                     <div
-                      onClick={() => setSelectedLessonId(lesson.id)}
+                      onClick={() => setSelectedLessonId(lesson.id === selectedLessonId ? null : lesson.id)}
                       className="flex-1 cursor-pointer"
                     >
-                      <p className="text-sm font-semibold text-gray-900">
-                        {formatLessonNumber(lesson.lesson_number)} - {lesson.subject}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        {new Date(lesson.date).toLocaleDateString(i18n.language)} • {formLabel} • {yearLabel}
-                      </p>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-base font-bold text-gray-900">
+                          {formatLessonNumber(lesson.lesson_number)}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          {new Date(lesson.date).toLocaleDateString(i18n.language, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formLabel} • {yearLabel}
+                        </span>
+                      </div>
+                      {hasNotes && (
+                        <div className="flex items-start gap-2 mt-2 p-2 bg-purple-50 rounded text-sm">
+                          <StickyNote size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-purple-800 line-clamp-2">{lesson.teacher_notes}</p>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex gap-1">
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => {
+                          setCurrentLesson(lesson)
+                          setShowStudentView(true)
+                        }}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
+                        aria-label={t('student_view')}
+                        title={t('student_view')}
+                      >
+                        <Eye size={16} />
+                      </button>
                       <button
                         onClick={() => openEvaluationModal(lesson.id)}
-                        className="p-1.5 text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                        className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-colors"
                         aria-label={t('evaluation')}
                         title={t('evaluation')}
                       >
-                        <ClipboardCheck size={14} />
+                        <ClipboardCheck size={16} />
                       </button>
                       <button
                         onClick={() => openLessonModal(lesson)}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                         aria-label={t('edit_lesson')}
                       >
-                        <Edit size={14} />
+                        <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteLesson(lesson.id)}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
                         aria-label={t('delete_lesson')}
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
+
+                  {/* Expanded Details */}
+                  {lesson.id === selectedLessonId && currentLesson && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                      {/* Subject */}
+                      <div>
+                        <span className="text-sm font-semibold text-gray-700">{t('subject')}: </span>
+                        <span className="text-sm text-gray-900">{currentLesson.subject}</span>
+                      </div>
+
+                      {/* Summary */}
+                      {currentLesson.summary && (
+                        <div>
+                          <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('summary')}:</h4>
+                          <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                            {currentLesson.summary}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Attention Box */}
+                      {currentLesson.attention_box && (
+                        <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                          <h4 className="text-sm font-semibold text-yellow-900 mb-1">{t('attention')}:</h4>
+                          <p className="text-sm text-yellow-800 whitespace-pre-wrap">
+                            {currentLesson.attention_box}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Public Presentation View */}
-      {currentLesson ? (
-        <div className="bg-white border-2 border-gray-200 rounded-lg p-8 shadow-lg">
-          {/* Lesson Header Info */}
-          <div className="grid grid-cols-2 gap-6 mb-8 text-lg">
-            <div>
-              <span className="font-semibold text-gray-700">{t('group')}:</span>
-              <span className="ml-2 text-gray-900">
-                {currentLesson.school_forms
-                  ? `${currentLesson.school_forms.year_level} ${currentLesson.school_forms.class_section}`
-                  : '—'}
-              </span>
-            </div>
-            <div>
-              <span className="font-semibold text-gray-700">{t('subject')}:</span>
-              <span className="ml-2 text-gray-900">{currentLesson.subject}</span>
-            </div>
-            <div>
-              <span className="font-semibold text-gray-700">{formatLessonNumber(currentLesson.lesson_number)}</span>
-            </div>
-            <div>
-              <span className="font-semibold text-gray-700">{t('date')}:</span>
-              <span className="ml-2 text-gray-900">
-                {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{t('summary')}:</h3>
-            <p className="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {currentLesson.summary || '—'}
-            </p>
-          </div>
-
-          {/* Attention Box */}
-          {currentLesson.attention_box && (
-            <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-              <h3 className="text-lg font-bold text-yellow-900 mb-2">{t('attention')}:</h3>
-              <p className="text-base text-yellow-800 whitespace-pre-wrap">
-                {currentLesson.attention_box}
-              </p>
-            </div>
-          )}
-
-          {/* Step-by-Step Guide */}
-          {showTeacherPanel && steps.length > 0 && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
-                <ChevronRight size={20} />
-                {t('step_by_step')}
-              </h3>
-              <ol className="space-y-2 list-decimal list-inside">
-                {steps.map((item, idx) => (
-                  <li key={idx} className="text-base text-blue-800">
-                    {item.step}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          )}
-
-          {/* Materials & Attachments */}
-          {showTeacherPanel && materials.length > 0 && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
-                <Paperclip size={20} />
-                {t('materials')}
-              </h3>
-              <ul className="space-y-2">
-                {materials.map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    {item.type === 'upload' ? (
-                      <FileText size={16} className="text-green-700" />
-                    ) : (
-                      <LinkIcon size={16} className="text-green-700" />
-                    )}
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-base text-green-700 hover:text-green-900 underline"
-                    >
-                      {item.description || item.url}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            })
           )}
         </div>
-      ) : (
-        <div className="text-center py-12 text-gray-500 bg-white border border-gray-200 rounded-lg">
-          {t('no_lessons')}
-        </div>
-      )}
+      </div>
 
-      {/* Floating Teacher Panel Toggle */}
-      <button
-        onClick={() => setShowTeacherPanel(!showTeacherPanel)}
-        className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700 transition-colors z-10"
-      >
-        {showTeacherPanel ? <EyeOff size={18} /> : <Eye size={18} />}
-        {showTeacherPanel ? t('close') : t('open_teacher_panel')}
-      </button>
-
-      {/* Teacher Notes Button */}
-      {currentLesson && (
-        <button
-          onClick={() => setShowNotesModal(true)}
-          className="fixed bottom-6 left-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-purple-600 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-10"
-        >
-          <StickyNote size={18} />
-          {t('teacher_notes')}
-        </button>
-      )}
-
-      {/* Teacher Notes Modal */}
-      {showNotesModal && currentLesson && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+      {/* Student Presentation Modal */}
+      {showStudentView && currentLesson && (
+        <div className="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">{t('teacher_notes')}</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                {formatLessonNumber(currentLesson.lesson_number)}
+              </h2>
               <button
-                onClick={() => setShowNotesModal(false)}
+                onClick={() => setShowStudentView(false)}
                 className="p-1 text-gray-500 hover:text-gray-700 rounded transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="px-6 py-4">
-              <div className="mb-4">
-                <h3 className="font-semibold text-gray-700 mb-2">
-                  {formatLessonNumber(currentLesson.lesson_number)}
-                </h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  <span className="font-medium">{t('date')}:</span>{' '}
-                  {new Date(currentLesson.date).toLocaleDateString(i18n.language)}
-                </p>
-                <p className="text-sm text-gray-600 mb-1">
-                  <span className="font-medium">{t('summary')}:</span> {currentLesson.summary}
+
+            {/* Content */}
+            <div className="px-6 py-6 space-y-6">
+              {/* Date */}
+              <div className="text-center">
+                <span className="text-lg text-gray-600">
+                  {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+
+              {/* Summary */}
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{t('summary')}</h3>
+                <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {currentLesson.summary || '—'}
                 </p>
               </div>
-              <div className="border-t border-gray-200 pt-4">
-                <h4 className="font-semibold text-gray-700 mb-2">{t('notes')}:</h4>
-                <p className="text-gray-800 whitespace-pre-wrap">
-                  {currentLesson.teacher_notes || '—'}
-                </p>
-              </div>
+
+              {/* Attention Box */}
+              {currentLesson.attention_box && (
+                <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                  <h3 className="text-lg font-bold text-yellow-900 mb-2">{t('attention')}</h3>
+                  <p className="text-base text-yellow-800 whitespace-pre-wrap">
+                    {currentLesson.attention_box}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -686,6 +745,54 @@ export default function LessonPresentation({ session }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Teacher Notes Modal */}
+      {showNotesModal && currentLesson && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">{t('teacher_notes')}</h2>
+              <button
+                onClick={() => setShowNotesModal(false)}
+                className="p-1 text-gray-500 hover:text-gray-700 rounded transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 py-4">
+              <div className="mb-4">
+                <h3 className="font-semibold text-gray-700 mb-2">
+                  {formatLessonNumber(currentLesson.lesson_number)}
+                </h3>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">{t('date')}:</span>{' '}
+                  {new Date(currentLesson.date).toLocaleDateString(i18n.language)}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">{t('summary')}:</span> {currentLesson.summary}
+                </p>
+              </div>
+              <div className="border-t border-gray-200 pt-4">
+                <h4 className="font-semibold text-gray-700 mb-2">{t('notes')}:</h4>
+                <p className="text-gray-800 whitespace-pre-wrap">
+                  {currentLesson.teacher_notes || '—'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Teacher Notes FAB */}
+      {currentLesson && (
+        <button
+          onClick={() => setShowNotesModal(true)}
+          className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-purple-600 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-10"
+        >
+          <StickyNote size={18} />
+          {t('teacher_notes')}
+        </button>
       )}
 
       {/* Evaluation Modal */}
