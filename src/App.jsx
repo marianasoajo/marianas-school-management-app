@@ -6,6 +6,7 @@ import LessonPresentation from './components/classroom/LessonPresentation'
 import GroupsManager from './components/groups/GroupsManager'
 import PlanningTable from './components/planning/PlanningTable'
 import StudentsManager from './components/students/StudentsManager'
+import EvaluationFilter from './components/evaluation/EvaluationFilter'
 import { supabase } from './lib/supabase'
 
 function App() {
@@ -130,6 +131,16 @@ function App() {
             >
               {t('students')}
             </button>
+            <button
+              onClick={() => setActiveTab('evaluations')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'evaluations'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {t('evaluation')}
+            </button>
           </nav>
         </div>
       </header>
@@ -157,6 +168,12 @@ function App() {
         {activeTab === 'students' && (
           <div className="bg-white rounded-lg shadow p-6">
             <StudentsManager session={session} />
+          </div>
+        )}
+
+        {activeTab === 'evaluations' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <EvaluationFilter session={session} />
           </div>
         )}
       </main>

@@ -7,6 +7,7 @@
 
 ## Navigation Structure
 - **Summaries / Sumários (Homepage):** Teacher view with lesson list showing summary and attention box for each lesson. Clicking a lesson expands to show teacher notes. Includes year/group/date filtering, lesson CRUD, import summaries from other groups, and launchpad for **Daily Self-Assessment / Autoavaliação Diária** per lesson. Green eye icon launches full-screen student presentation mode.
+- **Evaluation Filter / Filtro de Avaliação:** Filter and view student evaluation averages by group, student, and date range. Results ordered by class number or average rating.
 - **General Plan / Plano Geral:** Planning table (Themes, Activities, Manual Pages, Resources, Exercises, Registers).
 - **Groups / Turmas:** CRUD management for Academic Years (`school_years`) and Classes/Forms (`school_forms`).
 - **Students / Alunos:** Student CRUD with built-in initial group enrollment, optional inline guardian details on creation, and bulk CSV/XLS/XLSX import.
@@ -23,6 +24,9 @@
   - **Student Presentation (Full-Screen Modal):** Launched via green eye icon. Shows only lesson number (large, centered), date, summary, and attention box. No logos, no year/group metadata. Clean, distraction-free design for classroom projection. Close button (X) at top-right.
 - **Lesson-Scoped Self-Assessment:** "Daily Self-Assessment" is launched directly from a specific lesson summary card via an **"Avaliação / Self-Assessment"** button in the Teacher View.
 - **Assessment Modal (`OralEvaluation`):** Receives `lesson_id` automatically. Fetches students enrolled in that lesson's group (`school_form_id`) and academic year (`school_year_id`), ordered by `group_number` ASC. Handles attendance (`is_attending`), student rating (1–5), teacher rating (1–5), and notes per student.
+- **Evaluation Filter (`EvaluationFilter`):** Filter view over `evaluations` table showing student averages (separate student and teacher). Filters by academic year, group, student, and date range. Default sort by `group_number` ASC; reorderable by average ASC/DESC.
+  - **Filters:** Group (`school_form_id`), student identity within group, lesson date range.
+  - **Results:** Student name, process number, group number, student average, teacher average, evaluation count.
   - **Student Rating:** Displayed as **5-star rating system** (gold stars) instead of numbers. Clicking a star sets the rating.
   - **Teacher Rating:** Displayed as **5-star rating system** (green stars) instead of numbers. Clicking a star sets the rating.
   - **Scale labels:** 1=very_poor, 2=poor, 3=fair, 4=good, 5=excellent
