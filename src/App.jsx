@@ -2,11 +2,11 @@ import { Globe, LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Login from './components/auth/Login'
-import LessonPresentation from './components/classroom/LessonPresentation'
+import EvaluationFilter from './components/evaluation/EvaluationFilter'
 import GroupsManager from './components/groups/GroupsManager'
+import LessonPresentation from './components/lessons/LessonPresentation'
 import PlanningTable from './components/planning/PlanningTable'
 import StudentsManager from './components/students/StudentsManager'
-import EvaluationFilter from './components/evaluation/EvaluationFilter'
 import { supabase } from './lib/supabase'
 
 function App() {
@@ -93,51 +93,46 @@ function App() {
           <nav className="flex space-x-8 border-t border-gray-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab('general')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'general'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'general'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {t('general_planning')}
             </button>
             <button
               onClick={() => setActiveTab('summaries')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'summaries'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'summaries'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {t('summaries')}
             </button>
             <button
               onClick={() => setActiveTab('groups')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'groups'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'groups'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {t('groups')}
             </button>
             <button
               onClick={() => setActiveTab('students')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'students'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'students'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {t('students')}
             </button>
             <button
               onClick={() => setActiveTab('evaluations')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === 'evaluations'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'evaluations'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {t('evaluation')}
             </button>
