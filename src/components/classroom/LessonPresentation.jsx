@@ -14,7 +14,20 @@ import {
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useFormatters } from '../../utils/formatters'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import { useMemo } from 'react'
 import OralEvaluation from '../evaluation/OralEvaluation'
+
+const QLL_MODULES = {
+  toolbar: [
+    ['bold', 'italic'],
+    ['ol', 'ul'],
+    ['link']
+  ]
+}
+
+const QLL_FORMATS = ['bold', 'italic', 'ol', 'ul', 'link']
 
 export default function LessonPresentation({ session }) {
   const { formatLessonNumber, formatDate, t } = useFormatters()
@@ -734,10 +747,11 @@ export default function LessonPresentation({ session }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('summary')}
                 </label>
-                <textarea
+                <ReactQuill
                   value={formData.summary}
-                  onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                  rows={4}
+                  onChange={(content) => setFormData({ ...formData, summary: content })}
+                  modules={QLL_MODULES}
+                  formats={QLL_FORMATS}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -746,10 +760,11 @@ export default function LessonPresentation({ session }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('attention')}
                 </label>
-                <textarea
+                <ReactQuill
                   value={formData.attention_box}
-                  onChange={(e) => setFormData({ ...formData, attention_box: e.target.value })}
-                  rows={3}
+                  onChange={(content) => setFormData({ ...formData, attention_box: content })}
+                  modules={QLL_MODULES}
+                  formats={QLL_FORMATS}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -758,10 +773,11 @@ export default function LessonPresentation({ session }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('teacher_notes')}
                 </label>
-                <textarea
+                <ReactQuill
                   value={formData.teacher_notes}
-                  onChange={(e) => setFormData({ ...formData, teacher_notes: e.target.value })}
-                  rows={4}
+                  onChange={(content) => setFormData({ ...formData, teacher_notes: content })}
+                  modules={QLL_MODULES}
+                  formats={QLL_FORMATS}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
