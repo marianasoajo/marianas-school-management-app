@@ -19,6 +19,52 @@ import OralEvaluation from '../evaluation/OralEvaluation'
 export default function LessonPresentation({ session }) {
   const { t, i18n } = useTranslation()
 
+  // Helper function to format dates according to language
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const lang = i18n.language
+
+    if (lang === 'pt') {
+      // Portuguese: dd/mm/yyyy
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    } else {
+      // English: day of week, dd[ordinal] month year
+      // e.g., "Monday, 23rd of November 2026"
+      const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' })
+      const day = date.getDate()
+      const month = date.toLocaleDateString('en-US', { month: 'long' })
+      const year = date.getFullYear()
+
+      // Ordinal function
+      const getOrdinal = (n) => {
+        const s = ['th', 'st', 'nd', 'rd']
+        const v = n % 100
+        return s[(v - 20) % 10] || s[v] || s[0]
+      }
+
+      return (
+        <>
+          {dayOfWeek}, {' '}
+          <span>
+            {day}
+            <sup>{getOrdinal(day)}</sup>
+          </span>
+          {' ('}
+          {ordinalNumberToWords(day)}
+          {') '}
+          {' of '}
+          {month}
+          {' '}
+          {year}
+        </>
+      )
+    }
+  }
+
   // Data state
   const [lessons, setLessons] = useState([])
   const [schoolYears, setSchoolYears] = useState([])
@@ -361,14 +407,43 @@ export default function LessonPresentation({ session }) {
     }
   }
 
+  // Number to words (simple, for 1-99)
+  const numberToWords = (n) => {
+    const ones = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
+    const tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']
+    if (n < 20) return ones[n]
+    const t = Math.floor(n / 10)
+    const r = n % 10
+    return tens[t] + (r ? '-' + ones[r] : '')
+  }
+
+  // Ordinal number to words (simple, for 1-99)
+  const ordinalNumberToWords = (n) => {
+    const ones = ['zeroth','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth','eleventh','twelfth','thirteenth','fourteenth','fifteenth','sixteenth','seventeenth','eighteenth','nineteenth',]
+    const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+    const tensOrdinal = ['', '', 'twentieth', 'thirtieth', 'fortieth', 'fiftieth', 'sixtieth', 'seventieth', 'eightieth', 'ninetieth']
+
+    if (n < 20) return ones[n]
+    const t = Math.floor(n / 10)
+    const r = n % 10
+    return r === 0 ? tensOrdinal[t] : `${tens[t]}-${ones[r]}`
+    }
+
   // Format lesson number
   const formatLessonNumber = (lessonNumber) => {
     if (!lessonNumber) return ''
     const parts = lessonNumber.split(/\s+e\s+/i)
     if (parts.length === 2) {
-      return t('lesson_double', { first: parts[0], second: parts[1] })
+      const firstNum = parts[0].match(/\d+/)
+      const secondNum = parts[1].match(/\d+/)
+      const firstWord = firstNum ? numberToWords(parseInt(firstNum[0])) : ''
+      const secondWord = secondNum ? numberToWords(parseInt(secondNum[0])) : ''
+      return t('lesson_double', { first: `${parts[0]} (${firstWord})`, second: `${parts[1]} (${secondWord})` })
     }
-    return `${t('lesson_single')} ${lessonNumber}`
+    const match = lessonNumber.match(/\d+/)
+    const num = match ? parseInt(match[0]) : null
+    const word = num ? numberToWords(num) : ''
+    return `${t('lesson_single')} ${lessonNumber} (${word})`
   }
 
   // Open evaluation modal for a specific lesson
@@ -508,11 +583,7 @@ export default function LessonPresentation({ session }) {
                             {formatLessonNumber(lesson.lesson_number)}
                           </span>
                           <span className="text-sm text-gray-600">
-                            {new Date(lesson.date).toLocaleDateString(i18n.language, {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                            {formatDate(lesson.date)}
                           </span>
                           <span className="text-xs text-gray-500">—</span>
                           {!yearLabel ? '' : <span className="text-xs text-gray-500">{yearLabel}</span>}
@@ -620,11 +691,7 @@ export default function LessonPresentation({ session }) {
             {/* Date */}
             <div className="w-full max-w-3xl">
               <span className="text-2xl text-gray-600 text-left">
-                {new Date(currentLesson.date).toLocaleDateString(i18n.language, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {formatDate(currentLesson.date)}
               </span>
             </div>
 
@@ -901,7 +968,7 @@ export default function LessonPresentation({ session }) {
                       <p className="text-sm font-medium text-gray-900">
                         {formatLessonNumber(importSourceLesson.lesson_number)} - {importSourceLesson.subject}
                       </p>
-                      <p className="text-xs text-gray-500">{new Date(importSourceLesson.date).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500">{formatDate(importSourceLesson.date)}</p>
                       <button
                         onClick={() => {
                           setImportSourceLessonId('')
@@ -1040,7 +1107,7 @@ export default function LessonPresentation({ session }) {
                 </h3>
                 <p className="text-sm text-gray-600 mb-1">
                   <span className="font-medium">{t('date')}:</span>{' '}
-                  {new Date(currentLesson.date).toLocaleDateString(i18n.language)}
+                  {formatDate(currentLesson.date)}
                 </p>
                 <p className="text-sm text-gray-600 mb-1">
                   <span className="font-medium">{t('summary')}:</span> {currentLesson.summary}
