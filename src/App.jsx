@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Globe, LogOut } from 'lucide-react'
-import { supabase } from './lib/supabase'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Login from './components/auth/Login'
-import PlanningTable from './components/planning/PlanningTable'
 import LessonPresentation from './components/classroom/LessonPresentation'
-import StudentsManager from './components/students/StudentsManager'
 import GroupsManager from './components/groups/GroupsManager'
+import PlanningTable from './components/planning/PlanningTable'
+import StudentsManager from './components/students/StudentsManager'
+import { supabase } from './lib/supabase'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -61,7 +61,7 @@ function App() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Professora Mariana</h1>
+            <h1 className="text-2xl font-bold text-gray-900">EduPlanner</h1>
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
