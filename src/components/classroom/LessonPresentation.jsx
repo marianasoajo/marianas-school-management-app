@@ -21,22 +21,28 @@ import OralEvaluation from '../evaluation/OralEvaluation'
 
 const QLL_MODULES = {
   toolbar: [
-    ['bold', 'italic'],
+    ['bold', 'italic', 'underline', 'strike'],
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
     ['link']
   ]
 }
 
-const QLL_FORMATS = ['bold', 'italic', 'list', 'ordered', 'link']
+const QLL_FORMATS = ['bold', 'italic', 'underline', 'strike', 'list', 'ordered', 'link']
 
-// Helper function to sanitize and render HTML content
-const renderHTML = (html) => {
+// Helper component for safely rendering Quill HTML content.
+const RichText = ({ html, className = '', inline = false }) => {
   if (!html) return null
+
   const sanitized = DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'u', 's', 'p', 'br', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'u', 's', 'strike', 'p', 'br', 'ul', 'ol', 'li', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel']
   })
-  return { __html: sanitized }
+
+  const Tag = inline ? 'span' : 'div'
+
+  return (
+    <Tag className={`lesson-rich-text ${className}`.trim()} dangerouslySetInnerHTML={{ __html: sanitized }} />
+  )
 }
 
 export default function LessonPresentation({ session }) {
@@ -539,13 +545,13 @@ export default function LessonPresentation({ session }) {
 
                         {/* Summary - always visible */}
                         {lesson.summary && (
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-2 line-clamp-2" {...renderHTML(lesson.summary)} />
+                          <RichText html={lesson.summary} className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-2 line-clamp-2" />
                         )}
 
                         {/* Attention Box - always visible */}
                         {lesson.attention_box && (
                           <div className="mb-2 p-2 bg-yellow-50 border-l-3 border-yellow-400 rounded">
-                            <p className="text-xs text-yellow-800 line-clamp-2" {...renderHTML(lesson.attention_box)} />
+                            <RichText html={lesson.attention_box} className="text-xs text-yellow-800 line-clamp-2" />
                           </div>
                         )}
 
@@ -553,7 +559,7 @@ export default function LessonPresentation({ session }) {
                         {lesson.id === selectedLessonId && hasNotes && (
                           <div className="flex items-start gap-2 mt-2 p-2 bg-purple-50 rounded text-sm">
                             <StickyNote size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />
-                            <p className="text-purple-800 whitespace-pre-wrap">{lesson.teacher_notes}</p>
+                            <RichText html={lesson.teacher_notes} className="text-purple-800 whitespace-pre-wrap" />
                           </div>
                         )}
                         {lesson.id === selectedLessonId && !hasNotes && (
@@ -641,7 +647,7 @@ export default function LessonPresentation({ session }) {
             {currentLesson.summary && (
               <div className="w-full max-w-3xl">
                 <h2 className="text-2xl font-bold text-gray-900 mb-3 text-left">{t('summary')}</h2>
-                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap text-left" {...renderHTML(currentLesson.summary)} />
+                <RichText html={currentLesson.summary} className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap text-left" />
               </div>
             )}
 
@@ -649,7 +655,7 @@ export default function LessonPresentation({ session }) {
             {currentLesson.attention_box && (
               <div className="w-full max-w-3xl p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                 <h2 className="text-xl font-bold text-yellow-900 mb-2 text-left">{t('attention')}</h2>
-                <p className="text-lg text-yellow-800 whitespace-pre-wrap text-left" {...renderHTML(currentLesson.attention_box)} />
+                <RichText html={currentLesson.attention_box} className="text-lg text-yellow-800 whitespace-pre-wrap text-left" />
               </div>
             )}
           </div>
@@ -1052,13 +1058,13 @@ export default function LessonPresentation({ session }) {
                 </p>
                 <p className="text-sm text-gray-600 mb-1">
                   <span className="font-medium">{t('summary')}:</span>{' '}
-                  <span {...renderHTML(currentLesson.summary)} />
+                  <RichText html={currentLesson.summary} inline />
                 </p>
               </div>
               <div className="border-t border-gray-200 pt-4">
                 <h4 className="font-semibold text-gray-700 mb-2">{t('notes')}:</h4>
                 {currentLesson.teacher_notes ? (
-                  <p className="text-gray-800 whitespace-pre-wrap" {...renderHTML(currentLesson.teacher_notes)} />
+                  <RichText html={currentLesson.teacher_notes} className="text-gray-800 whitespace-pre-wrap" />
                 ) : (
                   <p className="text-gray-800 whitespace-pre-wrap">—</p>
                 )}
