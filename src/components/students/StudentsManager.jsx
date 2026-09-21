@@ -132,6 +132,7 @@ export default function StudentsManager({ session }) {
             id,
             school_year_id,
             school_form_id,
+            group_number,
             school_years (label),
             school_forms (year_level, class_section)
           )
@@ -215,6 +216,7 @@ export default function StudentsManager({ session }) {
         birthdate: student.birthdate || '',
         school_year_id: student.currentEnrollment?.school_year_id || '',
         school_form_id: student.currentEnrollment?.school_form_id || '',
+        group_number: student.currentEnrollment?.group_number || '',
         guardian_name: student.guardians?.[0]?.name || '',
         guardian_phone: student.guardians?.[0]?.phone_number || '',
         guardian_email: student.guardians?.[0]?.email || '',
@@ -229,6 +231,7 @@ export default function StudentsManager({ session }) {
         birthdate: '',
         school_year_id: filterYearId || (schoolYears.find((y) => y.is_active)?.id || ''),
         school_form_id: filterFormId || (schoolForms[0]?.id || ''),
+        group_number: '',
         guardian_name: '',
         guardian_phone: '',
         guardian_email: '',
@@ -243,7 +246,7 @@ export default function StudentsManager({ session }) {
   const handleSaveStudent = async () => {
     setError(null)
 
-    if (!studentForm.process_number || !studentForm.name) {
+    if (!studentForm.process_number || !studentForm.name || !studentForm.school_year_id || !studentForm.school_form_id || !studentForm.group_number) {
       setError(t('required_field'))
       return
     }
@@ -280,16 +283,19 @@ export default function StudentsManager({ session }) {
 
       // Handle Enrollment if year and form are selected
       if (studentForm.school_year_id && studentForm.school_form_id) {
-        await supabase
+        const { error: enrollmentError } = await supabase
           .from('student_enrollments')
           .upsert(
             {
               student_id: studentId,
               school_year_id: studentForm.school_year_id,
-              school_form_id: studentForm.school_form_id
+              school_form_id: studentForm.school_form_id,
+              group_number: Number(studentForm.group_number)
             },
             { onConflict: 'student_id,school_year_id' }
           )
+
+        if (enrollmentError) throw enrollmentError
       }
 
       // Handle Guardian if guardian name is provided
@@ -539,6 +545,14 @@ export default function StudentsManager({ session }) {
         }
       }
 
+      const group_number =
+        normalizedItem.group_number ||
+        normalizedItem.group_no ||
+        normalizedItem.numero_grupo ||
+        normalizedItem.numero_aluno ||
+        normalizedItem.no ||
+        ''
+
       // Map guardian fields
       const guardian_name =
         normalizedItem.guardian_name ||
@@ -568,13 +582,19 @@ export default function StudentsManager({ session }) {
         normalizedItem.relacao ||
         'mother'
 
-      const isValid = Boolean(process_number && name)
+      const isValid = Boolean(
+        process_number &&
+          name &&
+          group_number &&
+          Number.isInteger(Number(group_number))
+      )
 
       return {
         id: index + 1,
         process_number,
         name,
         birthdate,
+        group_number,
         guardian_name,
         guardian_phone,
         guardian_email,
@@ -582,7 +602,9 @@ export default function StudentsManager({ session }) {
         isValid,
         errors: [
           !process_number ? 'Processo em falta' : null,
-          !name ? 'Nome em falta' : null
+          !name ? 'Nome em falta' : null,
+          !group_number ? 'Número de grupo em falta' : null,
+          group_number && !Number.isInteger(Number(group_number)) ? 'Número de grupo inválido' : null
         ].filter(Boolean)
       }
     })
@@ -672,16 +694,19 @@ export default function StudentsManager({ session }) {
         if (studentError) throw studentError
 
         // 2. Insert Student Enrollment
-        await supabase
+        const { error: enrollmentError } = await supabase
           .from('student_enrollments')
           .upsert(
             {
               student_id: student.id,
               school_year_id: bulkYearId,
-              school_form_id: bulkFormId
+              school_form_id: bulkFormId,
+              group_number: Number(row.group_number)
             },
             { onConflict: 'student_id,school_year_id' }
           )
+
+        if (enrollmentError) throw enrollmentError
 
         // 3. Handle Guardian if provided
         if (row.guardian_name) {
@@ -771,10 +796,12 @@ export default function StudentsManager({ session }) {
 
       {/* Filter & Actions Toolbar */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
           <div className="relative md:col-span-2">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+            <label htmlFor="filter-search" className="block text-xs font-medium text-gray-700 mb-1">{t('search_students')}</label>
+            <Search className="absolute left-3 top-8 text-gray-400" size={16} />
             <input
+              id="filter-search"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -783,8 +810,11 @@ export default function StudentsManager({ session }) {
             />
           </div>
 
-          <select
-            value={filterYearId}
+          <div>
+            <label htmlFor="filter-year" className="block text-xs font-medium text-gray-700 mb-1">{t('academic_year')}</label>
+            <select
+              id="filter-year"
+              value={filterYearId}
             onChange={(e) => setFilterYearId(e.target.value)}
             className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -795,9 +825,13 @@ export default function StudentsManager({ session }) {
               </option>
             ))}
           </select>
+          </div>
 
-          <select
-            value={filterFormId}
+          <div>
+            <label htmlFor="filter-form" className="block text-xs font-medium text-gray-700 mb-1">{t('group')}</label>
+            <select
+              id="filter-form"
+              value={filterFormId}
             onChange={(e) => setFilterFormId(e.target.value)}
             className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -808,18 +842,19 @@ export default function StudentsManager({ session }) {
               </option>
             ))}
           </select>
+          </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:col-span-2">
             <button
               onClick={() => openStudentModal()}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
             >
               <Plus size={16} />
               {t('add_student_btn')}
             </button>
             <button
               onClick={() => setShowBulkImportModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors whitespace-nowrap"
               title={t('bulk_import')}
             >
               <Upload size={16} />
@@ -974,6 +1009,18 @@ export default function StudentsManager({ session }) {
                   type="date"
                   value={studentForm.birthdate}
                   onChange={(e) => setStudentForm({ ...studentForm, birthdate: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('group_number')} *
+                </label>
+                <input
+                  type="text"
+                  value={studentForm.group_number}
+                  onChange={(e) => setStudentForm({ ...studentForm, group_number: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -1344,15 +1391,15 @@ export default function StudentsManager({ session }) {
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     {t('or_paste_csv')}
                   </label>
-                  <textarea
+                    <textarea
                     rows={3}
                     value={rawText}
                     onChange={(e) => handleRawTextChange(e.target.value)}
-                    placeholder="process_number,name,birthdate,guardian_name,guardian_phone,guardian_email&#10;1001,Ana Silva,2012-05-14,Maria Silva,912345678,maria@email.pt"
+                      placeholder="process_number,name,group_number,birthdate,guardian_name,guardian_phone,guardian_email&#10;1001,Ana Silva,12,2012-05-14,Maria Silva,912345678,maria@email.pt"
                     className="w-full font-mono text-xs px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {t('required_columns')} | {t('optional_columns')}
+                    <p className="text-xs text-gray-500 mt-1">
+                    {t('required_columns')} ({t('process_number')}, {t('full_name')}, {t('group_number')}) | {t('optional_columns')}
                   </p>
                 </div>
               </div>
@@ -1382,6 +1429,7 @@ export default function StudentsManager({ session }) {
                           <th className="px-3 py-2 text-left text-gray-600">Status</th>
                           <th className="px-3 py-2 text-left text-gray-600">{t('process_number')}</th>
                           <th className="px-3 py-2 text-left text-gray-600">{t('full_name')}</th>
+                          <th className="px-3 py-2 text-left text-gray-600">{t('group_number')}</th>
                           <th className="px-3 py-2 text-left text-gray-600">{t('birthdate')}</th>
                           <th className="px-3 py-2 text-left text-gray-600">{t('guardian_name')}</th>
                           <th className="px-3 py-2 text-left text-gray-600">{t('phone_number')}</th>
@@ -1404,6 +1452,7 @@ export default function StudentsManager({ session }) {
                             </td>
                             <td className="px-3 py-1.5 font-medium">{row.process_number || '—'}</td>
                             <td className="px-3 py-1.5">{row.name || '—'}</td>
+                            <td className="px-3 py-1.5 font-medium">{row.group_number || '—'}</td>
                             <td className="px-3 py-1.5 text-gray-500">{row.birthdate || '—'}</td>
                             <td className="px-3 py-1.5 text-gray-500">{row.guardian_name || '—'}</td>
                             <td className="px-3 py-1.5 text-gray-500">{row.guardian_phone || '—'}</td>
