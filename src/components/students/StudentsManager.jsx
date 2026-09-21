@@ -1,22 +1,21 @@
-import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  UserCheck,
-  Users,
-  Search,
-  X,
-  Loader2,
   AlertCircle,
-  Upload,
-  FileSpreadsheet,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  FileText
+  FileSpreadsheet,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  UserCheck,
+  Users,
+  X
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import * as XLSX from 'xlsx'
 import { supabase } from '../../lib/supabase'
 
@@ -584,9 +583,9 @@ export default function StudentsManager({ session }) {
 
       const isValid = Boolean(
         process_number &&
-          name &&
-          group_number &&
-          Number.isInteger(Number(group_number))
+        name &&
+        group_number &&
+        Number.isInteger(Number(group_number))
       )
 
       return {
@@ -815,16 +814,16 @@ export default function StudentsManager({ session }) {
             <select
               id="filter-year"
               value={filterYearId}
-            onChange={(e) => setFilterYearId(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">{t('all_years')}</option>
-            {schoolYears.map((year) => (
-              <option key={year.id} value={year.id}>
-                {year.label}
-              </option>
-            ))}
-          </select>
+              onChange={(e) => setFilterYearId(e.target.value)}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">{t('all_years')}</option>
+              {schoolYears.map((year) => (
+                <option key={year.id} value={year.id}>
+                  {year.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -832,16 +831,16 @@ export default function StudentsManager({ session }) {
             <select
               id="filter-form"
               value={filterFormId}
-            onChange={(e) => setFilterFormId(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">{t('all_groups')}</option>
-            {schoolForms.map((form) => (
-              <option key={form.id} value={form.id}>
-                {form.year_level} {form.class_section}
-              </option>
-            ))}
-          </select>
+              onChange={(e) => setFilterFormId(e.target.value)}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">{t('all_groups')}</option>
+              {schoolForms.map((form) => (
+                <option key={form.id} value={form.id}>
+                  {form.year_level} {form.class_section}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex gap-2 md:col-span-2">
@@ -1391,14 +1390,14 @@ export default function StudentsManager({ session }) {
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     {t('or_paste_csv')}
                   </label>
-                    <textarea
+                  <textarea
                     rows={3}
                     value={rawText}
                     onChange={(e) => handleRawTextChange(e.target.value)}
-                      placeholder="process_number,name,group_number,birthdate,guardian_name,guardian_phone,guardian_email&#10;1001,Ana Silva,12,2012-05-14,Maria Silva,912345678,maria@email.pt"
+                    placeholder="process_number,name,group_number,birthdate,guardian_name,guardian_phone,guardian_email&#10;1001,Ana Silva,12,2012-05-14,Maria Silva,912345678,maria@email.pt"
                     className="w-full font-mono text-xs px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
-                    <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     {t('required_columns')} ({t('process_number')}, {t('full_name')}, {t('group_number')}) | {t('optional_columns')}
                   </p>
                 </div>
