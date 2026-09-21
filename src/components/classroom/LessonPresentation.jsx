@@ -16,17 +16,28 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { supabase } from '../../lib/supabase'
 import { useFormatters } from '../../utils/formatters'
+import DOMPurify from 'dompurify'
 import OralEvaluation from '../evaluation/OralEvaluation'
 
 const QLL_MODULES = {
   toolbar: [
     ['bold', 'italic'],
-    ['ol', 'ul'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
     ['link']
   ]
 }
 
-const QLL_FORMATS = ['bold', 'italic', 'ol', 'ul', 'link']
+const QLL_FORMATS = ['bold', 'italic', 'list', 'ordered', 'link']
+
+// Helper function to sanitize and render HTML content
+const renderHTML = (html) => {
+  if (!html) return null
+  const sanitized = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'u', 's', 'p', 'br', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href', 'target', 'rel']
+  })
+  return { __html: sanitized }
+}
 
 export default function LessonPresentation({ session }) {
   const { formatLessonNumber, formatDate, t } = useFormatters()
@@ -528,17 +539,13 @@ export default function LessonPresentation({ session }) {
 
                         {/* Summary - always visible */}
                         {lesson.summary && (
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-2 line-clamp-2">
-                            {lesson.summary}
-                          </p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-2 line-clamp-2" {...renderHTML(lesson.summary)} />
                         )}
 
                         {/* Attention Box - always visible */}
                         {lesson.attention_box && (
                           <div className="mb-2 p-2 bg-yellow-50 border-l-3 border-yellow-400 rounded">
-                            <p className="text-xs text-yellow-800 line-clamp-2">
-                              ⚠️ {lesson.attention_box}
-                            </p>
+                            <p className="text-xs text-yellow-800 line-clamp-2" {...renderHTML(lesson.attention_box)} />
                           </div>
                         )}
 
@@ -634,9 +641,7 @@ export default function LessonPresentation({ session }) {
             {currentLesson.summary && (
               <div className="w-full max-w-3xl">
                 <h2 className="text-2xl font-bold text-gray-900 mb-3 text-left">{t('summary')}</h2>
-                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap text-left">
-                  {currentLesson.summary}
-                </p>
+                <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap text-left" {...renderHTML(currentLesson.summary)} />
               </div>
             )}
 
@@ -644,9 +649,7 @@ export default function LessonPresentation({ session }) {
             {currentLesson.attention_box && (
               <div className="w-full max-w-3xl p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                 <h2 className="text-xl font-bold text-yellow-900 mb-2 text-left">{t('attention')}</h2>
-                <p className="text-lg text-yellow-800 whitespace-pre-wrap text-left">
-                  {currentLesson.attention_box}
-                </p>
+                <p className="text-lg text-yellow-800 whitespace-pre-wrap text-left" {...renderHTML(currentLesson.attention_box)} />
               </div>
             )}
           </div>
@@ -1048,14 +1051,17 @@ export default function LessonPresentation({ session }) {
                   {formatDate(currentLesson.date)}
                 </p>
                 <p className="text-sm text-gray-600 mb-1">
-                  <span className="font-medium">{t('summary')}:</span> {currentLesson.summary}
+                  <span className="font-medium">{t('summary')}:</span>{' '}
+                  <span {...renderHTML(currentLesson.summary)} />
                 </p>
               </div>
               <div className="border-t border-gray-200 pt-4">
                 <h4 className="font-semibold text-gray-700 mb-2">{t('notes')}:</h4>
-                <p className="text-gray-800 whitespace-pre-wrap">
-                  {currentLesson.teacher_notes || '—'}
-                </p>
+                {currentLesson.teacher_notes ? (
+                  <p className="text-gray-800 whitespace-pre-wrap" {...renderHTML(currentLesson.teacher_notes)} />
+                ) : (
+                  <p className="text-gray-800 whitespace-pre-wrap">—</p>
+                )}
               </div>
             </div>
           </div>
