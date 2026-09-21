@@ -12,11 +12,10 @@ import {
   X
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import { useFormatters } from '../../utils/formatters'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useMemo } from 'react'
+import { supabase } from '../../lib/supabase'
+import { useFormatters } from '../../utils/formatters'
 import OralEvaluation from '../evaluation/OralEvaluation'
 
 const QLL_MODULES = {
@@ -414,65 +413,74 @@ export default function LessonPresentation({ session }) {
           <Filter size={16} className="text-gray-600" />
           <h3 className="text-sm font-semibold text-gray-700">{t('filter_by_date')}</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <select
-            value={filterYearId}
-            onChange={(e) => setFilterYearId(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">{t('all_years')}</option>
-            {schoolYears.map((year) => (
-              <option key={year.id} value={year.id}>
-                {year.label}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+          {/* Filters Group */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 lg:max-w-3xl">
+            <div className="relative">
+              <select
+                value={filterYearId}
+                onChange={(e) => setFilterYearId(e.target.value)}
+                className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                <option value="">{t('all_years')}</option>
+                {schoolYears.map((year) => (
+                  <option key={year.id} value={year.id}>
+                    {year.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select
-            value={filterFormId}
-            onChange={(e) => setFilterFormId(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">{t('all_groups')}</option>
-            {schoolForms.map((form) => (
-              <option key={form.id} value={form.id}>
-                {form.year_level} {form.class_section}
-              </option>
-            ))}
-          </select>
+            <div className="relative">
+              <select
+                value={filterFormId}
+                onChange={(e) => setFilterFormId(e.target.value)}
+                className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                <option value="">{t('all_groups')}</option>
+                {schoolForms.map((form) => (
+                  <option key={form.id} value={form.id}>
+                    {form.year_level} {form.class_section}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <input
-            type="date"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+            <div className="relative">
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              />
+            </div>
+          </div>
 
-          <button
-            onClick={() => openLessonModal()}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            {t('add_lesson')}
-          </button>
-          <button
-            onClick={() => {
-              // Set import source to current filters
-              setImportSourceYearId(filterYearId)
-              setImportSourceFormId(filterFormId)
-              // Set import source to selected lesson
-              setImportSourceLessonId(selectedLessonId)
-              setImportSourceLesson(currentLesson)
-              // Reset target forms
-              setImportTargetFormIds([])
-              // Show import modal
-              setShowImportModal(true)
-            }}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors"
-          >
-            <Copy size={16} />
-            {t('import_summaries')}
-          </button>
+          {/* Actions Group */}
+          <div className="flex items-center gap-2.5 sm:w-auto w-full pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
+            <button
+              onClick={() => {
+                setImportSourceYearId(filterYearId)
+                setImportSourceFormId(filterFormId)
+                setImportSourceLessonId(selectedLessonId)
+                setImportSourceLesson(currentLesson)
+                setImportTargetFormIds([])
+                setShowImportModal(true)
+              }}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 h-10 px-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all shadow-sm"
+            >
+              <Copy size={16} className="text-gray-500" />
+              <span>{t('import_summaries')}</span>
+            </button>
+
+            <button
+              onClick={() => openLessonModal()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 h-10 px-4 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm"
+            >
+              <Plus size={16} />
+              <span>{t('add_lesson')}</span>
+            </button>
+          </div>
         </div>
       </div>
 
