@@ -1,20 +1,35 @@
-// src/features/lessons/hooks/useLessons.js
 import { useCallback, useEffect, useState } from 'react'
 import { lessonApi } from '../api/lessonApi'
 
 export function useLessons(session, filters) {
     const [lessons, setLessons] = useState([])
+    const [schoolYears, setSchoolYears] = useState([])
+    const [schoolForms, setSchoolForms] = useState([])
+    const [selectedLessonId, setSelectedLessonId] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [selectedLessonId, setSelectedLessonId] = useState(null)
+
+    useEffect(() => {
+        if (!session) return
+        lessonApi
+            .fetchMetadata()
+            .then(({ schoolYears, schoolForms }) => {
+                setSchoolYears(schoolYears)
+                setSchoolForms(schoolForms)
+            })
+            .catch((err) => setError(err.message))
+    }, [session])
 
     const loadLessons = useCallback(async () => {
         if (!session) return
         setLoading(true)
+        setError(null)
         try {
             const data = await lessonApi.fetchFiltered(filters)
-            setLessons(data || [])
-            if (data?.length && !selectedLessonId) setSelectedLessonId(data[0].id)
+            setLessons(data)
+            if (data.length > 0 && !selectedLessonId) {
+                setSelectedLessonId(data[0].id)
+            }
         } catch (err) {
             setError(err.message)
         } finally {
@@ -26,21 +41,26 @@ export function useLessons(session, filters) {
         loadLessons()
     }, [loadLessons])
 
-    const deleteLesson = async (lesson) => {
+    const deleteLesson = async (lessonId) => {
         try {
-            const match = lesson.lesson_number.match(/(\d+)/)
-            const num = match ? parseInt(match[1]) : null
-
-            if (num) {
-                await lessonApi.deleteAndRenumber(lesson.id, lesson.school_year_id, lesson.school_form_id, num)
-            } else {
-                await lessonApi.deleteAndRenumber(lesson.id)
-            }
+            await lessonApi.deleteAndRenumber(lessonId)
+            if (selectedLessonId === lessonId) setSelectedLessonId(null)
             await loadLessons()
         } catch (err) {
             setError(err.message)
         }
     }
 
-    return { lessons, loading, error, selectedLessonId, setSelectedLessonId, deleteLesson, refresh: loadLessons }
+    return {
+        lessons,
+        schoolYears,
+        schoolForms,
+        loading,
+        error,
+        setError,
+        selectedLessonId,
+        setSelectedLessonId,
+        deleteLesson,
+        refresh: loadLessons
+    }
 }

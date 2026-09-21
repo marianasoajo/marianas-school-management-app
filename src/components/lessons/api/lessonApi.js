@@ -1,11 +1,20 @@
-// src/features/lessons/api/lessonApi.js
 import { supabase } from '../../../lib/supabase'
 
 export const lessonApi = {
+    async fetchMetadata() {
+        const [yearsRes, formsRes] = await Promise.all([
+            supabase.from('school_years').select('*').order('label', { ascending: false }),
+            supabase.from('school_forms').select('*').order('year_level, class_section')
+        ])
+        if (yearsRes.error) throw yearsRes.error
+        if (formsRes.error) throw formsRes.error
+        return { schoolYears: yearsRes.data || [], schoolForms: formsRes.data || [] }
+    },
+
     async fetchFiltered({ yearId, formId, date }) {
         let query = supabase
             .from('lessons')
-            .select('*, school_years(label), school_forms(year_level, class_section)')
+            .select('*, school_years (label), school_forms (year_level, class_section)')
             .order('date', { ascending: true })
 
         if (yearId) query = query.eq('school_year_id', yearId)
@@ -14,31 +23,105 @@ export const lessonApi = {
 
         const { data, error } = await query
         if (error) throw error
-        return data
+        return data || []
     },
 
-    async deleteAndRenumber(lessonId, yearId, formId, deletedNumber) {
+    async getNextLessonNumber(yearId, formId) {
+        if (!yearId || !formId) return '1'
+        const { data } = await supabase
+            .from('lessons')
+            .select('lesson_number')
+            .eq('school_year_id', yearId)
+            .eq('school_form_id', formId)
+            .order('lesson_number', { ascending: false })
+            .limit(1)
+
+        if (data && data.length > 0) {
+            const match = data[0].lesson_number.match(/(\d+)/)
+            if (match) return String(parseInt(match[1]) + 1)
+        }
+        return '1'
+    },
+
+    async saveLesson(formData, editingId = null) {
+        if (editingId) {
+            const { data, error } = await supabase
+                .from('lessons')
+                .update(formData)
+                .eq('id', editingId)
+                .select()
+                .single()
+            if (error) throw error
+            return data
+        } else {
+            const { data, error } = await supabase
+                .from('lessons')
+                .insert(formData)
+                .select()
+                .single()
+            if (error) throw error
+            return data
+        }
+    },
+
+    async deleteAndRenumber(lessonId) {
+        const { data: lessonToDelete, error: fetchError } = await supabase
+            .from('lessons')
+            .select('lesson_number, school_year_id, school_form_id')
+            .eq('id', lessonId)
+            .single()
+
+        if (fetchError) throw fetchError
+
+        const match = lessonToDelete.lesson_number.match(/(\d+)/)
         const { error: deleteError } = await supabase.from('lessons').delete().eq('id', lessonId)
         if (deleteError) throw deleteError
 
-        // Fetch subsequent lessons to update sequence
-        const { data: subsequent } = await supabase
+        if (!match) return
+
+        const deletedNumber = parseInt(match[1])
+        const { data: subsequent, error: fetchSubError } = await supabase
             .from('lessons')
             .select('id, lesson_number')
-            .eq('school_year_id', yearId)
-            .eq('school_form_id', formId)
+            .eq('school_year_id', lessonToDelete.school_year_id)
+            .eq('school_form_id', lessonToDelete.school_form_id)
+
+        if (fetchSubError) throw fetchSubError
 
         const updates = (subsequent || [])
-            .map(lesson => {
-                const match = lesson.lesson_number.match(/(\d+)/)
-                if (!match) return null
-                const num = parseInt(match[1])
-                return num > deletedNumber ? { id: lesson.id, lesson_number: String(num - 1) } : null
+            .map((l) => {
+                const m = l.lesson_number.match(/(\d+)/)
+                if (!m) return null
+                const num = parseInt(m[1])
+                return num > deletedNumber ? { id: l.id, new_number: String(num - 1) } : null
             })
             .filter(Boolean)
 
         for (const update of updates) {
-            await supabase.from('lessons').update({ lesson_number: update.lesson_number }).eq('id', update.id)
+            await supabase.from('lessons').update({ lesson_number: update.new_number }).eq('id', update.id)
         }
+    },
+
+    async importSummaries({ sourceLessonId, targetFormIds }) {
+        const { data: sourceLesson, error: fetchError } = await supabase
+            .from('lessons')
+            .select('*')
+            .eq('id', sourceLessonId)
+            .single()
+
+        if (fetchError) throw fetchError
+        if (!sourceLesson) throw new Error('Source lesson not found')
+
+        const copies = targetFormIds.map((targetFormId) => {
+            const { id, created_at, ...lessonData } = sourceLesson
+            return {
+                ...lessonData,
+                school_form_id: targetFormId,
+                school_year_id: sourceLesson.school_year_id
+            }
+        })
+
+        const { error: insertError } = await supabase.from('lessons').insert(copies)
+        if (insertError) throw insertError
     }
 }

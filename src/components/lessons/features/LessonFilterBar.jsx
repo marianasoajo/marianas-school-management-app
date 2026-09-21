@@ -1,0 +1,68 @@
+import { Copy, Plus } from 'lucide-react'
+
+export default function LessonFilterBar({
+    filters,
+    onFilterChange,
+    schoolYears,
+    schoolForms,
+    onOpenAddModal,
+    onOpenImportModal,
+    t
+}) {
+    return (
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 lg:max-w-3xl">
+                <select
+                    value={filters.yearId}
+                    onChange={(e) => onFilterChange({ ...filters, yearId: e.target.value })}
+                    className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                >
+                    <option value="">{t('all_years')}</option>
+                    {schoolYears.map((year) => (
+                        <option key={year.id} value={year.id}>
+                            {year.label}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={filters.formId}
+                    onChange={(e) => onFilterChange({ ...filters, formId: e.target.value })}
+                    className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                >
+                    <option value="">{t('all_groups')}</option>
+                    {schoolForms.map((form) => (
+                        <option key={form.id} value={form.id}>
+                            {form.year_level} {form.class_section}
+                        </option>
+                    ))}
+                </select>
+
+                <input
+                    type="date"
+                    value={filters.date}
+                    onChange={(e) => onFilterChange({ ...filters, date: e.target.value })}
+                    className="w-full h-10 px-3 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                />
+            </div>
+
+            <div className="flex items-center gap-2.5 sm:w-auto w-full pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
+                <button
+                    onClick={onOpenImportModal}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 h-10 px-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all shadow-sm"
+                >
+                    <Copy size={16} className="text-gray-500" />
+                    <span>{t('import_summaries')}</span>
+                </button>
+
+                <button
+                    onClick={onOpenAddModal}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 h-10 px-4 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm"
+                >
+                    <Plus size={16} />
+                    <span>{t('add_lesson')}</span>
+                </button>
+            </div>
+        </div>
+    )
+}
