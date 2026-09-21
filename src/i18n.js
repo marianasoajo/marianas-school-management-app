@@ -217,7 +217,9 @@ const resources = {
       "import": "Import",
       "student_view": "Student View",
       "evaluation": "Evaluation",
-      "no_notes": "No notes for this lesson"
+      "no_notes": "No notes for this lesson",
+      "group_number": "No."
+
     }
   },
   pt: {
@@ -434,7 +436,8 @@ const resources = {
       "import": "Importar",
       "student_view": "Vista do Aluno",
       "evaluation": "Avaliação",
-      "no_notes": "Não há notas para esta lição"
+      "no_notes": "Não há notas para esta lição",
+      "group_number": "N.º"
     }
   }
 }
