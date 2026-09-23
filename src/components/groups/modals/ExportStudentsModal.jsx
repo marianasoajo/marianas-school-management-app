@@ -1,8 +1,8 @@
 import { ArrowRight, Loader2, Users, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { SchoolFormSelect } from '../../ui/SchoolFormSelect'
+import { SchoolYearSelect } from '../../ui/SchoolYearSelect'
 import { groupsApi } from '../api/groupsApi'
-import { SchoolFormSelect } from './SchoolFormSelect'
-import { SchoolYearSelect } from './SchoolYearSelect'
 
 export function ExportStudentsModal({ isOpen, onClose, schoolYears, schoolForms, onExport, t }) {
     // Source Selection

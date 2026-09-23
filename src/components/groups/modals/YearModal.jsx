@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { DateInput } from './DateInput'
+import { DateInput } from '../../ui/DateInput'
 
 export function YearModal({ isOpen, onClose, editingYear, onSave, t }) {
     const [yearForm, setYearForm] = useState({
