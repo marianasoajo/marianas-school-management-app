@@ -233,8 +233,14 @@ const resources = {
       "hgp": "H.G.P",
       "por": "Portuguese",
       "eng": "English",
-      "select_subject": "Select Subject"
-
+      "select_subject": "Select Subject",
+      "export_promote_students": "Export/Promote Students",
+      "target_group": "Target Group",
+      "preserve_group_numbers": "Preserve Group Numbers",
+      "select_all": "Select All",
+      "school_form": "School Form",
+      "no_students_found": "Nenhum aluno encontrado",
+      "confirm_export": "Confirm Export/Promotion",
     }
   },
   pt: {
@@ -467,7 +473,14 @@ const resources = {
       "hgp": "H.G.P",
       "por": "Português",
       "eng": "Inglês",
-      "select_subject": "Selecionar Disciplina"
+      "select_subject": "Selecionar Disciplina",
+      "export_promote_students": "Exportar/Promover Alunos",
+      "target_group": "Turma de Destino",
+      "preserve_group_numbers": "Manter Números de Turma",
+      "select_all": "Selecionar Todos",
+      "school_form": "Turma",
+      "no_students_found": "Nenhum aluno encontrado",
+      "confirm_export": "Confirmar Exportação/Promoção",
     }
   }
 }
