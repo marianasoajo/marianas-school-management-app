@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { SchoolFormSelect } from '../../ui/SchoolFormSelect'
 import { SchoolYearSelect } from '../../ui/SchoolYearSelect'
 
-export function EnrollmentModal({
+export function EnrolmentModal({
     isOpen,
     onClose,
     selectedStudent,
