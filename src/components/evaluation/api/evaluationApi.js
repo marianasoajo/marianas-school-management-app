@@ -126,5 +126,67 @@ export const evaluationApi = {
 
         if (error) throw error
         return data || []
+    },
+
+    // Fetch dropdown options for lesson selector
+    async fetchLessonsList() {
+        const { data, error } = await supabase
+            .from('lessons')
+            .select(`
+        id, lesson_number, date, subject, school_year_id, school_form_id,
+        school_years (label), school_forms (year_level, class_section)
+      `)
+            .order('date', { ascending: false })
+
+        if (error) throw error
+        return data || []
+    },
+
+    // Fetch full details, enrollments, and evaluations for a selected lesson
+    async fetchLessonAndStudents(lessonId) {
+        const { data: lessonData, error: lessonError } = await supabase
+            .from('lessons')
+            .select(`*, school_years (label), school_forms (year_level, class_section)`)
+            .eq('id', lessonId)
+            .single()
+
+        if (lessonError) throw lessonError
+
+        const [enrollmentsRes, evaluationsRes] = await Promise.all([
+            supabase
+                .from('student_enrollments')
+                .select(`group_number, student_id, students (id, process_number, name)`)
+                .eq('school_year_id', lessonData.school_year_id)
+                .eq('school_form_id', lessonData.school_form_id)
+                .order('group_number', { ascending: true }),
+            supabase
+                .from('evaluations')
+                .select('*')
+                .eq('lesson_id', lessonId)
+        ])
+
+        if (enrollmentsRes.error) throw enrollmentsRes.error
+        if (evaluationsRes.error) throw evaluationsRes.error
+
+        const evaluationsMap = new Map((evaluationsRes.data || []).map((e) => [e.student_id, e]))
+
+        const combined = (enrollmentsRes.data || []).map((enrollment) => {
+            const student = enrollment.students
+            const existingEval = evaluationsMap.get(student.id)
+
+            return {
+                student_id: student.id,
+                student_name: student.name,
+                process_number: student.process_number,
+                group_number: enrollment.group_number,
+                evaluation_id: existingEval?.id || null,
+                is_attending: existingEval?.is_attending ?? true,
+                student_rating: existingEval?.student_rating || 3,
+                teacher_rating: existingEval?.teacher_rating || 3,
+                notes: existingEval?.notes || ''
+            }
+        })
+
+        return { lesson: lessonData, studentEvaluations: combined }
     }
 }
