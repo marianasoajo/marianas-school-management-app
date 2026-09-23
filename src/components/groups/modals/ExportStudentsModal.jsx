@@ -110,16 +110,16 @@ export function ExportStudentsModal({ isOpen, onClose, schoolYears, schoolForms,
                 {/* Modal Form */}
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-1">
                     {/* Source vs Target Mapping */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
                         {/* Source Group */}
                         <div className="space-y-3">
-                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <div className="flex items-center h-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('source_group') || 'Origem'}
-                            </span>
+                            </div>
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    {t('school_year') || 'Ano Letivo'}
+                                    {t('academic_year') || 'Ano Letivo'}
                                 </label>
                                 <SchoolYearSelect
                                     value={sourceYearId}
@@ -146,14 +146,14 @@ export function ExportStudentsModal({ isOpen, onClose, schoolYears, schoolForms,
 
                         {/* Target Group */}
                         <div className="space-y-3 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-800 pt-3 md:pt-0 md:pl-4">
-                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1">
+                            <div className="flex items-center gap-1 h-5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                                 <ArrowRight size={14} />
                                 {t('target_group') || 'Destino'}
-                            </span>
+                            </div>
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    {t('school_year') || 'Ano Letivo'}
+                                    {t('academic_year') || 'Ano Letivo'}
                                 </label>
                                 <SchoolYearSelect
                                     value={targetYearId}
