@@ -298,3 +298,5 @@ export function EvaluationFilter({ session }) {
     </div>
   )
 }
+
+export default EvaluationFilter
