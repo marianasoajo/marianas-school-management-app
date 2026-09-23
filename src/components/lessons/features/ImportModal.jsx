@@ -49,6 +49,8 @@ export default function ImportModal({
         lessons.find((l) => l.id === sourceLessonId) ||
         (currentLesson?.id === sourceLessonId ? currentLesson : null)
 
+    const availableSubjects = [t("hgp"), t("por"), t("eng")]
+
     const isEverythingSelected =
         fields.summary && fields.attention_box && fields.teacher_notes && fields.lesson_number
 
@@ -472,14 +474,19 @@ export default function ImportModal({
                                     <label className="block text-xs font-semibold text-gray-600 mb-1">
                                         {t('subject') || 'Subject / Title'}
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={fields.lesson_number ? (selectedSourceLesson?.subject || '') : newLessonSubject}
                                         onChange={(e) => setNewLessonSubject(e.target.value)}
                                         disabled={fields.lesson_number}
-                                        placeholder={t('enter_subject') || 'Enter subject or title'}
                                         className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-500"
-                                    />
+                                    >
+                                        <option value="">— {t('select_subject')} —</option>
+                                        {availableSubjects.map((subject) => (
+                                            <option key={subject.id} value={subject.id}>
+                                                {subject.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         )}

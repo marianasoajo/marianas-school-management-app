@@ -35,6 +35,8 @@ export default function LessonFormModal({
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState(null)
 
+    const availableSubjects = [t("hgp"), t("por"), t("eng")]
+
     useEffect(() => {
         if (!editingLesson && filters.yearId && filters.formId && !formData.lesson_number) {
             lessonApi.getNextLessonNumber(filters.yearId, filters.formId).then((nextNum) => {
@@ -80,7 +82,7 @@ export default function LessonFormModal({
                                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                 required
                             >
-                                <option value="">— {t('select_lesson')} —</option>
+                                <option value="">— {t('select_year')} —</option>
                                 {schoolYears.map((year) => (
                                     <option key={year.id} value={year.id}>{year.label}</option>
                                 ))}
@@ -95,7 +97,7 @@ export default function LessonFormModal({
                                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                 required
                             >
-                                <option value="">— {t('select_lesson')} —</option>
+                                <option value="">— {t('select_group')} —</option>
                                 {schoolForms.map((form) => (
                                     <option key={form.id} value={form.id}>{form.year_level} {form.class_section}</option>
                                 ))}
@@ -106,13 +108,17 @@ export default function LessonFormModal({
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">{t('subject')} *</label>
-                            <input
-                                type="text"
+                            <select
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                 required
-                            />
+                            >
+                                <option value="">— {t('select_subject')} —</option>
+                                {availableSubjects.map((subject) => (
+                                    <option key={subject} value={subject}>{subject}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <div>

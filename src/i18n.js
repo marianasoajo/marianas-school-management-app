@@ -127,7 +127,7 @@ const resources = {
       "enrollment_modal_title": "Enrollment Management",
       "current_enrollment": "Current Enrollment",
       "not_enrolled": "Not enrolled in any year/group",
-      "enroll_in_year_group": "Enroll in Year/Group",
+      "enroll_in_year_group": "Enrol in Year/Group",
       "enrollment_saved": "Enrollment saved successfully",
       "guardian_modal_title": "Guardian Management",
       "linked_guardians": "Linked Guardians",
@@ -225,7 +225,16 @@ const resources = {
       "existing_lessons_found": "Existing lessons found",
       "select_target_year": "Select Target Year",
       "select_target_group": "Select Target Group",
-      "no_lessons_in_target": "No lessons in target group"
+      "no_lessons_in_target": "No lessons in target group",
+      "unselect_all": "Unselect All",
+      "update_existing_lessons": "Update Existing Lessons",
+      "create_new_lesson": "Create New Lesson",
+      "create_and_import": "Create and Import",
+      "hgp": "H.G.P",
+      "por": "Portuguese",
+      "eng": "English",
+      "select_subject": "Select Subject"
+
     }
   },
   pt: {
@@ -433,12 +442,12 @@ const resources = {
       "login_footer": "© 2026 Professora Mariana - Todos os direitos reservados",
       "logout": "Sair",
       "import_summaries": "Importar Summários",
-      "import_summaries_description": "Copiar sumário para outros grupos. Selecione o grupo de origem e os grupos de destino abaixo.",
-      "source_group": "Grupo de origem",
-      "target_groups": "Grupos de destino (selecione um ou mais)",
+      "import_summaries_description": "Copiar sumário para outras turmas. Selecione a turma de origem e os grupos de destino abaixo.",
+      "source_group": "Turma de origem",
+      "target_groups": "Turmas de destino (selecione uma ou mais)",
       "select_year": "Selecionar Ano",
-      "select_group": "Selecionar Grupo",
-      "select_source_and_targets": "Por favor selecione o ano de origem, o grupo de origem e pelo menos um grupo de destino.",
+      "select_group": "Selecionar Turma",
+      "select_source_and_targets": "Por favor selecione o ano de origem, a turma de origem e pelo menos um grupo de destino.",
       "import": "Importar",
       "student_view": "Vista do Aluno",
       "evaluation": "Avaliação",
@@ -449,8 +458,16 @@ const resources = {
       "target_existing_lessons": "Lições de Destino",
       "existing_lessons_found": "Lições existentes encontradas",
       "select_target_year": "Selecionar Ano de Destino",
-      "select_target_group": "Selecionar Grupo de Destino",
-      "no_lessons_in_target": "Não há lições no grupo de destino"
+      "select_target_group": "Selecionar Turma de Destino",
+      "no_lessons_in_target": "Não há lições na turma de destino",
+      "unselect_all": "Desmarcar Tudo",
+      "update_existing_lessons": "Atualizar Lições Existentes",
+      "create_new_lesson": "Criar Nova Lição",
+      "create_and_import": "Criar e Importar",
+      "hgp": "H.G.P",
+      "por": "Português",
+      "eng": "Inglês",
+      "select_subject": "Selecionar Disciplina"
     }
   }
 }
