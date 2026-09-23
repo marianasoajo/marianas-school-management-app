@@ -1,4 +1,4 @@
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 
 export const fetchMetadata = async () => {
     const [yearsRes, formsRes] = await Promise.all([
