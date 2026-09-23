@@ -4,7 +4,7 @@ export function StudentTable({
     loading,
     students,
     onEditStudent,
-    onEnrollStudent,
+    onEnrolStudent,
     onManageGuardians,
     onDeleteStudent,
     t
@@ -65,8 +65,8 @@ export function StudentTable({
                                     {student.birthdate ? new Date(student.birthdate).toLocaleDateString() : '—'}
                                 </td>
                                 <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                    {student.currentEnrollment
-                                        ? `${student.currentEnrollment.school_forms.year_level} ${student.currentEnrollment.school_forms.class_section} (${student.currentEnrollment.school_years.label})`
+                                    {student.currentEnrolment
+                                        ? `${student.currentEnrolment.school_forms.year_level} ${student.currentEnrolment.school_forms.class_section} (${student.currentEnrolment.school_years.label})`
                                         : '—'}
                                 </td>
                                 <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
@@ -93,9 +93,9 @@ export function StudentTable({
                                             <Pencil size={14} />
                                         </button>
                                         <button
-                                            onClick={() => onEnrollStudent(student)}
+                                            onClick={() => onEnrolStudent(student)}
                                             className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded transition-colors"
-                                            title={t('enroll_student')}
+                                            title={t('enrol_student')}
                                         >
                                             <UserCheck size={14} />
                                         </button>

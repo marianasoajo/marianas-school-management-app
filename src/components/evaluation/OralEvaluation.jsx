@@ -98,7 +98,7 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
     }
   }, [lessonId])
 
-  // Fetch selected lesson details, enrollments (with group_number), and evaluations concurrently
+  // Fetch selected lesson details, enrolments (with group_number), and evaluations concurrently
   useEffect(() => {
     if (!selectedLessonId) return
 
@@ -129,10 +129,10 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
 
       setSelectedLesson(lessonData)
 
-      // 2. Parallel fetching of enrollments (ordered by group_number) and existing evaluations
-      const [enrollmentsRes, evaluationsRes] = await Promise.all([
+      // 2. Parallel fetching of enrolments (ordered by group_number) and existing evaluations
+      const [enrolmentsRes, evaluationsRes] = await Promise.all([
         supabase
-          .from('student_enrollments')
+          .from('student_enrolments')
           .select(`
             group_number,
             student_id,
@@ -154,8 +154,8 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
 
       if (!isSubscribed) return
 
-      if (enrollmentsRes.error) {
-        setError(enrollmentsRes.error.message)
+      if (enrolmentsRes.error) {
+        setError(enrolmentsRes.error.message)
         setLoading(false)
         return
       }
@@ -172,15 +172,15 @@ export default function OralEvaluation({ lessonId = null, onClose = null }) {
       )
 
       // 4. Build student evaluation list ordered by class roll number
-      const combined = (enrollmentsRes.data || []).map((enrollment) => {
-        const student = enrollment.students
+      const combined = (enrolmentsRes.data || []).map((enrolment) => {
+        const student = enrolment.students
         const existingEval = evaluationsMap.get(student.id)
 
         return {
           student_id: student.id,
           student_name: student.name,
           process_number: student.process_number,
-          group_number: enrollment.group_number,
+          group_number: enrolment.group_number,
           evaluation_id: existingEval?.id || null,
           is_attending: existingEval?.is_attending ?? true,
           student_rating: existingEval?.student_rating || 3,

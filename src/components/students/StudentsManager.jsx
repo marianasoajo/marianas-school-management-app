@@ -8,7 +8,7 @@ import {
   detachGuardian,
   fetchMetadata,
   fetchStudents,
-  saveEnrollment,
+  saveEnrolment,
   saveStudent
 } from './api/studentApi'
 import { BulkImportModal } from './modals/BulkImportModal'
@@ -37,7 +37,7 @@ export default function StudentsManager({ session }) {
 
   // Modal Triggers
   const [showStudentModal, setShowStudentModal] = useState(false)
-  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false)
+  const [showEnrolmentModal, setShowEnrolmentModal] = useState(false)
   const [showGuardianModal, setShowGuardianModal] = useState(false)
   const [showBulkImportModal, setShowBulkImportModal] = useState(false)
 
@@ -113,17 +113,17 @@ export default function StudentsManager({ session }) {
     }
   }
 
-  // Enrollment Actions
-  const handleOpenEnrollment = (student) => {
+  // Enrolment Actions
+  const handleOpenEnrolment = (student) => {
     setSelectedStudent(student)
-    setShowEnrollmentModal(true)
+    setShowEnrolmentModal(true)
   }
 
-  const handleSaveEnrollment = async (enrollmentForm) => {
+  const handleSaveEnrolment = async (enrolmentForm) => {
     try {
-      await saveEnrollment(selectedStudent.id, enrollmentForm)
-      setShowEnrollmentModal(false)
-      notifySuccess(t('enrollment_saved'))
+      await saveEnrolment(selectedStudent.id, enrolmentForm)
+      setShowEnrolmentModal(false)
+      notifySuccess(t('enrolment_saved'))
       loadStudents()
     } catch (err) {
       setError(err.message)
@@ -180,7 +180,7 @@ export default function StudentsManager({ session }) {
 
         if (studentError) throw studentError
 
-        await supabase.from('student_enrollments').upsert(
+        await supabase.from('student_enrolments').upsert(
           {
             student_id: student.id,
             school_year_id: bulkYearId,
@@ -241,9 +241,9 @@ export default function StudentsManager({ session }) {
       process_number: editingStudent.process_number || '',
       name: editingStudent.name || '',
       birthdate: editingStudent.birthdate || '',
-      school_year_id: editingStudent.currentEnrollment?.school_year_id || '',
-      school_form_id: editingStudent.currentEnrollment?.school_form_id || '',
-      group_number: editingStudent.currentEnrollment?.group_number || '',
+      school_year_id: editingStudent.currentEnrolment?.school_year_id || '',
+      school_form_id: editingStudent.currentEnrolment?.school_form_id || '',
+      group_number: editingStudent.currentEnrolment?.group_number || '',
       guardian_name: editingStudent.guardians?.[0]?.name || '',
       guardian_phone: editingStudent.guardians?.[0]?.phone_number || '',
       guardian_email: editingStudent.guardians?.[0]?.email || '',
@@ -305,7 +305,7 @@ export default function StudentsManager({ session }) {
         loading={loading}
         students={students}
         onEditStudent={handleOpenEditStudent}
-        onEnrollStudent={handleOpenEnrollment}
+        onEnrolStudent={handleOpenEnrolment}
         onManageGuardians={handleOpenGuardians}
         onDeleteStudent={handleDeleteStudent}
         t={t}
@@ -323,13 +323,13 @@ export default function StudentsManager({ session }) {
         t={t}
       />
 
-      <EnrollmentModal
-        isOpen={showEnrollmentModal}
-        onClose={() => setShowEnrollmentModal(false)}
+      <EnrolmentModal
+        isOpen={showEnrolmentModal}
+        onClose={() => setShowEnrolmentModal(false)}
         selectedStudent={selectedStudent}
         schoolYears={schoolYears}
         schoolForms={schoolForms}
-        onSave={handleSaveEnrollment}
+        onSave={handleSaveEnrolment}
         t={t}
       />
 

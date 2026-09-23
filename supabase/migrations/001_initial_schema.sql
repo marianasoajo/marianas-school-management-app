@@ -29,8 +29,8 @@ CREATE TABLE students (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. Student Form Enrollments (Tracks student form history across school years)
-CREATE TABLE student_enrollments (
+-- 5. Student Form Enrolments (Tracks student form history across school years)
+CREATE TABLE student_enrolments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID REFERENCES students(id) ON DELETE CASCADE,
   school_form_id UUID REFERENCES school_forms(id) ON DELETE RESTRICT,
@@ -105,7 +105,7 @@ CREATE TABLE evaluations (
 ALTER TABLE school_years ENABLE ROW LEVEL SECURITY;
 ALTER TABLE school_forms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
-ALTER TABLE student_enrollments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_enrolments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guardians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE student_guardians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planning_units ENABLE ROW LEVEL SECURITY;
@@ -116,7 +116,7 @@ ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public access" ON school_years FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON school_forms FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON students FOR ALL USING (true);
-CREATE POLICY "Allow public access" ON student_enrollments FOR ALL USING (true);
+CREATE POLICY "Allow public access" ON student_enrolments FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON guardians FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON student_guardians FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON planning_units FOR ALL USING (true);

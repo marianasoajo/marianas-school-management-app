@@ -20,7 +20,7 @@ export const fetchStudents = async ({ filterYearId, filterFormId, searchQuery })
         .from('students')
         .select(`
       *,
-      student_enrollments (
+      student_enrolments (
         id,
         school_year_id,
         school_form_id,
@@ -59,18 +59,18 @@ export const fetchStudents = async ({ filterYearId, filterFormId, searchQuery })
     let combined = (studentsData || []).map((student) => ({
         ...student,
         guardians: guardiansMap[student.id] || [],
-        currentEnrollment: student.student_enrollments?.[0] || null
+        currentEnrolment: student.student_enrolments?.[0] || null
     }))
 
     if (filterYearId) {
         combined = combined.filter((s) =>
-            s.student_enrollments?.some((e) => e.school_year_id === filterYearId)
+            s.student_enrolments?.some((e) => e.school_year_id === filterYearId)
         )
     }
 
     if (filterFormId) {
         combined = combined.filter((s) =>
-            s.student_enrollments?.some((e) => e.school_form_id === filterFormId)
+            s.student_enrolments?.some((e) => e.school_form_id === filterFormId)
         )
     }
 
@@ -117,8 +117,8 @@ export const saveStudent = async (studentForm, editingStudent = null) => {
     }
 
     if (studentForm.school_year_id && studentForm.school_form_id) {
-        const { error: enrollmentError } = await supabase
-            .from('student_enrollments')
+        const { error: enrolmentError } = await supabase
+            .from('student_enrolments')
             .upsert(
                 {
                     student_id: studentId,
@@ -129,7 +129,7 @@ export const saveStudent = async (studentForm, editingStudent = null) => {
                 { onConflict: 'student_id,school_year_id' }
             )
 
-        if (enrollmentError) throw enrollmentError
+        if (enrolmentError) throw enrolmentError
     }
 
     if (studentForm.guardian_name?.trim()) {
@@ -180,14 +180,14 @@ export const deleteStudent = async (studentId) => {
     if (error) throw error
 }
 
-export const saveEnrollment = async (studentId, enrollmentForm) => {
+export const saveEnrolment = async (studentId, enrolmentForm) => {
     const { error } = await supabase
-        .from('student_enrollments')
+        .from('student_enrolments')
         .upsert(
             {
                 student_id: studentId,
-                school_year_id: enrollmentForm.school_year_id,
-                school_form_id: enrollmentForm.school_form_id
+                school_year_id: enrolmentForm.school_year_id,
+                school_form_id: enrolmentForm.school_form_id
             },
             { onConflict: 'student_id,school_year_id' }
         )

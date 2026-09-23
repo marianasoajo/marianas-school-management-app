@@ -81,7 +81,7 @@ export function StudentFormModal({
                     </div>
 
                     <div className="border-t border-gray-200 dark:border-gray-800 pt-4">
-                        <h3 className="text-sm font-semibold mb-3">{t('current_enrollment')}</h3>
+                        <h3 className="text-sm font-semibold mb-3">{t('current_enrolment')}</h3>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-xs font-medium mb-1">{t('academic_year')}</label>

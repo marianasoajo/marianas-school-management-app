@@ -10,12 +10,12 @@
 - **Evaluation Filter / Filtro de Avaliação:** Filter and view student evaluation averages by group, student, and date range. Results ordered by class number or average rating.
 - **General Plan / Plano Geral:** Planning table (Themes, Activities, Manual Pages, Resources, Exercises, Registers).
 - **Groups / Turmas:** CRUD management for Academic Years (`school_years`) and Classes/Forms (`school_forms`).
-- **Students / Alunos:** Student CRUD with built-in initial group enrollment, optional inline guardian details on creation, and bulk CSV/XLS/XLSX import.
+- **Students / Alunos:** Student CRUD with built-in initial group enrolment, optional inline guardian details on creation, and bulk CSV/XLS/XLSX import.
 
 ## Key Business Logic
 - **Authentication:** Login screen with email and password fields only. Auth guard in App.jsx checks session status on load and shows Login component when unauthenticated. Logout button in top header. All components receive `session` prop and guard queries with `if (!session) return` to prevent 401 errors.
 - **Homepage:** Summaries/lesson list is the default homepage (App.jsx `activeTab = 'summaries'`).
-- **Student Creation & Enrollment:** The "Add Student" modal includes mandatory dropdowns for **Academic Year** (`school_year_id`) and **Group/Turma** (`school_form_id`). It also includes optional fields for **Guardian Information** (Name, Phone, Email, Relationship). Submitting creates the student, enrollment, and guardian link in a single step.
+- **Student Creation & Enrolment:** The "Add Student" modal includes mandatory dropdowns for **Academic Year** (`school_year_id`) and **Group/Turma** (`school_form_id`). It also includes optional fields for **Guardian Information** (Name, Phone, Email, Relationship). Submitting creates the student, enrolment, and guardian link in a single step.
 - **Bulk Student Import:** Modal supporting file upload (`.csv`, `.xls`, `.xlsx`) or manual text paste. Requires **Academic Year** and **Group** selection before import. Automatically maps Process Number, Student Name, Birthdate, Group Number, and optional Guardian fields. Validates year and group exist; if not found but valid entries are provided, creates missing year/group records automatically. All imported students are enrolled into the selected Academic Year and Group.
 - **Lesson Management:** Auto-incrementing lesson numbers when creating (queries last number for year/group and increments). Auto-decrementing (cascade renumbering) when deleting a lesson—all subsequent lessons in the same year/group have their numbers decremented by 1.
 - **Import Summaries Feature:** Copy all lessons from one group to multiple other groups. Source group selects year and group; target groups are checkboxes. Creates duplicate lessons with same content for each selected target group.
