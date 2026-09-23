@@ -123,5 +123,53 @@ export const lessonApi = {
 
         const { error: insertError } = await supabase.from('lessons').insert(copies)
         if (insertError) throw insertError
+    },
+
+    async fetchLessonsByForm(yearId, formId) {
+        if (!yearId || !formId) return []
+        const { data, error } = await supabase
+            .from('lessons')
+            .select('id, lesson_number, subject, date, summary, attention_box, teacher_notes')
+            .eq('school_year_id', yearId)
+            .eq('school_form_id', formId)
+            .order('date', { ascending: true })
+
+        if (error) throw error
+        return data || []
+    },
+
+    async importToExistingLessons({ sourceLessonId, targetLessonIds, fields }) {
+        if (!targetLessonIds || targetLessonIds.length === 0) {
+            throw new Error('No target lessons selected.')
+        }
+
+        // 1. Fetch source lesson content
+        const { data: source, error: fetchError } = await supabase
+            .from('lessons')
+            .select('*')
+            .eq('id', sourceLessonId)
+            .single()
+
+        if (fetchError || !source) throw fetchError || new Error('Source lesson not found')
+
+        // 2. Build payload dynamically based on selected fields
+        const payload = {}
+        if (fields.summary) payload.summary = source.summary
+        if (fields.attention_box) payload.attention_box = source.attention_box
+        if (fields.teacher_notes) payload.teacher_notes = source.teacher_notes
+        if (fields.lesson_number) payload.lesson_number = source.lesson_number
+        if (fields.subject) payload.subject = source.subject
+
+        if (Object.keys(payload).length === 0) {
+            throw new Error('Please select at least one field to import.')
+        }
+
+        // 3. Update existing target lessons
+        const { error: updateError } = await supabase
+            .from('lessons')
+            .update(payload)
+            .in('id', targetLessonIds)
+
+        if (updateError) throw updateError
     }
 }
