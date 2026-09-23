@@ -218,8 +218,14 @@ const resources = {
       "student_view": "Student View",
       "evaluation": "Evaluation",
       "no_notes": "No notes for this lesson",
-      "group_number": "No."
-
+      "group_number": "No.",
+      "what_to_import": "Select Content to Copy",
+      "import_everything": "Import Everything",
+      "target_existing_lessons": "Target Existing Lessons",
+      "existing_lessons_found": "Existing lessons found",
+      "select_target_year": "Select Target Year",
+      "select_target_group": "Select Target Group",
+      "no_lessons_in_target": "No lessons in target group"
     }
   },
   pt: {
@@ -437,7 +443,14 @@ const resources = {
       "student_view": "Vista do Aluno",
       "evaluation": "Avaliação",
       "no_notes": "Não há notas para esta lição",
-      "group_number": "N.º"
+      "group_number": "N.º",
+      "what_to_import": "Selecionar Conteúdo a Copiar",
+      "import_everything": "Importar Tudo",
+      "target_existing_lessons": "Lições de Destino",
+      "existing_lessons_found": "Lições existentes encontradas",
+      "select_target_year": "Selecionar Ano de Destino",
+      "select_target_group": "Selecionar Grupo de Destino",
+      "no_lessons_in_target": "Não há lições no grupo de destino"
     }
   }
 }
