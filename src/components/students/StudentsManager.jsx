@@ -12,6 +12,7 @@ import {
   saveStudent
 } from './api/studentApi'
 import { BulkImportModal } from './modals/BulkImportModal'
+import { EnrolmentModal } from './modals/EnrolmentModal'
 import { GuardianModal } from './modals/GuardianModal'
 import { StudentFormModal } from './modals/StudentFormModal'
 import { StudentFilterBar } from './StudentFilterBar'
