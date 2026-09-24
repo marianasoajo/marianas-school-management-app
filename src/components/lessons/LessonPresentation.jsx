@@ -1,5 +1,5 @@
 import { AlertCircle, Eye, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormatters } from '../../utils/formatters'
 import { useLessons } from './hooks/useLessons'
 
@@ -31,6 +31,16 @@ export default function LessonPresentation({ session }) {
     deleteLesson,
     refresh
   } = useLessons(session, filters)
+
+  // Automatically default filter to the active school year once metadata loads
+  useEffect(() => {
+    if (schoolYears.length > 0 && !filters.yearId) {
+      const activeYear = schoolYears.find((y) => y.is_active) || schoolYears[0]
+      if (activeYear) {
+        setFilters((prev) => ({ ...prev, yearId: activeYear.id }))
+      }
+    }
+  }, [schoolYears, filters.yearId])
 
   const selectedLesson = lessons.find((l) => l.id === selectedLessonId) || null
 
