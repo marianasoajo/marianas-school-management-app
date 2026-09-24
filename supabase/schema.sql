@@ -57,11 +57,10 @@ CREATE TABLE student_guardians (
   PRIMARY KEY (student_id, guardian_id)
 );
 
--- 8. Planning Units (Interface 1)
+-- 8. Planning Units (Interface 1) - Reusable Theme Content
 CREATE TABLE planning_units (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   school_year_id UUID REFERENCES school_years(id) ON DELETE CASCADE,
-  school_form_id UUID REFERENCES school_forms(id) ON DELETE CASCADE,
   theme TEXT NOT NULL, -- Aprendizagens Essenciais
   activities TEXT,
   manual_pages TEXT,
@@ -71,6 +70,13 @@ CREATE TABLE planning_units (
   exercises_digital TEXT,
   registers TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8b. Junction Table: Planning Units <-> School Forms (Many-to-Many)
+CREATE TABLE planning_unit_forms (
+  planning_unit_id UUID REFERENCES planning_units(id) ON DELETE CASCADE,
+  school_form_id UUID REFERENCES school_forms(id) ON DELETE CASCADE,
+  PRIMARY KEY (planning_unit_id, school_form_id)
 );
 
 -- 9. Lessons (Interface 2)
@@ -110,6 +116,7 @@ ALTER TABLE student_enrolments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guardians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE student_guardians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planning_units ENABLE ROW LEVEL SECURITY;
+ALTER TABLE planning_unit_forms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
 
@@ -121,5 +128,6 @@ CREATE POLICY "Allow public access" ON student_enrolments FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON guardians FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON student_guardians FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON planning_units FOR ALL USING (true);
+CREATE POLICY "Allow public access" ON planning_unit_forms FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON lessons FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON evaluations FOR ALL USING (true);
