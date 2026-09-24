@@ -5,6 +5,7 @@ const resources = {
   en: {
     translation: {
       "general_planning": "General Plan",
+      "general_planning_subtitle": "General Learning Plan",
       "summaries": "Summaries",
       "presentation": "Summaries",
       "daily_selfassessment": "Daily Self-Assessment",
@@ -167,6 +168,7 @@ const resources = {
       "delete_school_form": "Delete School Form",
       "create_school_form": "Create School Form",
       "update_school_form": "Update School Form",
+      "filter_by_school_form": "Filter by School Form",
       "year_level": "Year Level",
       "class_section": "Class Section",
       "form_created": "School form created successfully",
@@ -239,13 +241,17 @@ const resources = {
       "preserve_group_numbers": "Preserve Group Numbers",
       "select_all": "Select All",
       "school_form": "School Form",
-      "no_students_found": "Nenhum aluno encontrado",
+      "select_form": "Select Form",
+      "no_students_found": "No students found",
       "confirm_export": "Confirm Export/Promotion",
+      "add_theme": "Add Theme",
+      "theme_title": "Theme Title",
     }
   },
   pt: {
     translation: {
       "general_planning": "Plano Geral",
+      "general_planning_subtitle": "Plano Geral de Aprendizagem",
       "summaries": "Sumários",
       "presentation": "Sumários",
       "daily_selfassessment": "Autoavaliação Diária",
@@ -407,6 +413,7 @@ const resources = {
       "delete_school_form": "Eliminar Turma",
       "create_school_form": "Criar Turma",
       "update_school_form": "Atualizar Turma",
+      "filter_by_school_form": "Filtrar por Turma",
       "year_level": "Nível de Ano",
       "class_section": "Turma",
       "form_created": "Turma criada com sucesso",
@@ -479,8 +486,11 @@ const resources = {
       "preserve_group_numbers": "Manter Números de Turma",
       "select_all": "Selecionar Todos",
       "school_form": "Turma",
+      "select_form": "Selecionar Turma",
       "no_students_found": "Nenhum aluno encontrado",
       "confirm_export": "Confirmar Exportação/Promoção",
+      "add_theme": "Adicionar Tema",
+      "theme_title": "Título do Tema",
     }
   }
 }
