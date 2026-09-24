@@ -90,7 +90,7 @@ export function PlanningThemeCard({
                         </div>
                     </div>
 
-                    {/* Compact Input for Manual Pages */}
+                    {/* Compact Single-Line Input for Manual Pages */}
                     <div className="space-y-1">
                         <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             {t('manual_pages') || 'Páginas do Manual / Livro'}
@@ -104,7 +104,7 @@ export function PlanningThemeCard({
                         />
                     </div>
 
-                    {/* Rich Text Editors for Large Content Fields */}
+                    {/* Expanded Rich Text Editors */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -113,7 +113,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.activities || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'activities', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
 
@@ -124,7 +124,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.registers || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'registers', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
 
@@ -135,7 +135,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.resources_physical || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'resources_physical', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
 
@@ -146,7 +146,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.resources_digital || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'resources_digital', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
 
@@ -157,7 +157,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.exercises_physical || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'exercises_physical', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
 
@@ -168,7 +168,7 @@ export function PlanningThemeCard({
                             <RichTextEditor
                                 value={unit.exercises_digital || ''}
                                 onChange={(val) => onFieldChange(unit.id, 'exercises_digital', val)}
-                                className="min-h-[140px]"
+                                minHeight="240px"
                             />
                         </div>
                     </div>
