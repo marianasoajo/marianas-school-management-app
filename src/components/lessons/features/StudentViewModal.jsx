@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import { useEffect } from 'react'
-import RichText from './RichText'
+import RichText from '../../ui/RichText'
 
 export default function StudentViewModal({ lesson, onClose, formatters }) {
     const { formatLessonNumber, formatDate, t } = formatters

@@ -1,5 +1,5 @@
 import { ClipboardCheck, Edit, Eye, StickyNote, Trash2 } from 'lucide-react'
-import RichText from './RichText'
+import RichText from '../../ui/RichText'
 
 export default function LessonCard({
     lesson,
