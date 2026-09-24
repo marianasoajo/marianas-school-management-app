@@ -9,7 +9,6 @@ import { PlanningThemeCard } from './PlanningThemeCard'
 export default function PlanningTable({ session }) {
   const { t } = useTranslation()
 
-  // State Management
   const [themes, setThemes] = useState([])
   const [schoolForms, setSchoolForms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -18,9 +17,9 @@ export default function PlanningTable({ session }) {
 
   const [expandedThemeIds, setExpandedThemeIds] = useState(new Set())
   const [selectedFormFilters, setSelectedFormFilters] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
   const [dirtyIds, setDirtyIds] = useState(new Set())
 
-  // Initial Fetch
   const loadData = useCallback(async () => {
     if (!session) return
     setLoading(true)
@@ -40,7 +39,6 @@ export default function PlanningTable({ session }) {
     loadData()
   }, [loadData])
 
-  // Handlers
   const handleToggleExpand = (id) => {
     setExpandedThemeIds((prev) => {
       const next = new Set(prev)
@@ -62,13 +60,13 @@ export default function PlanningTable({ session }) {
     setDirtyIds((prev) => new Set(prev).add(themeId))
   }
 
+  // Direct inline theme creation
   const handleCreateTheme = async () => {
     setSaving(true)
     setError(null)
     try {
-      const defaultFormId = schoolForms[0]?.id || null
       const defaultTitle = t('new_theme_placeholder') || 'Novo Tema de Aprendizagem'
-      const newTheme = await planningApi.createTheme(defaultFormId, defaultTitle)
+      const newTheme = await planningApi.createTheme(defaultTitle)
 
       setThemes((prev) => [...prev, newTheme])
       setExpandedThemeIds((prev) => new Set(prev).add(newTheme.id))
@@ -113,9 +111,17 @@ export default function PlanningTable({ session }) {
     }
   }
 
+  // Filter Logic: Form Filter + Theme Title Search Filter
   const filteredThemes = themes.filter((theme) => {
-    if (selectedFormFilters.length === 0) return true
-    return selectedFormFilters.includes(theme.school_form_id)
+    const matchesForm =
+      selectedFormFilters.length === 0 ||
+      (theme.form_ids && theme.form_ids.some((fId) => selectedFormFilters.includes(fId)))
+
+    const matchesSearch =
+      !searchTerm.trim() ||
+      (theme.theme && theme.theme.toLowerCase().includes(searchTerm.toLowerCase().trim()))
+
+    return matchesForm && matchesSearch
   })
 
   if (loading) {
@@ -149,6 +155,8 @@ export default function PlanningTable({ session }) {
         selectedFormIds={selectedFormFilters}
         onToggleFilter={handleToggleFormFilter}
         onClearFilter={() => setSelectedFormFilters([])}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         t={t}
       />
 

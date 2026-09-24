@@ -246,6 +246,9 @@ const resources = {
       "confirm_export": "Confirm Export/Promotion",
       "add_theme": "Add Theme",
       "theme_title": "Theme Title",
+      "search_theme_placeholder": "Search by theme title",
+      "assign_to_forms": "Assign to School Forms (Multi-Select)",
+      "all_forms": "Todas as Turmas",
     }
   },
   pt: {
@@ -491,6 +494,9 @@ const resources = {
       "confirm_export": "Confirmar Exportação/Promoção",
       "add_theme": "Adicionar Tema",
       "theme_title": "Título do Tema",
+      "search_theme_placeholder": "Pesquisar por título do tema",
+      "assign_to_forms": "Atribuir a Turmas (Multi-seleção)",
+      "all_forms": "Todas as Turmas",
     }
   }
 }

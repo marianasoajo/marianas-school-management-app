@@ -17,3 +17,5 @@ export function RichTextEditor({ value, onChange, placeholder = '' }) {
         </div>
     )
 }
+
+export default RichTextEditor
