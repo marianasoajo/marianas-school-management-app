@@ -1,6 +1,22 @@
 import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import ConfirmModal from '../ui/ConfirmDeletionModal'
 
 export function SchoolFormsTab({ loading, schoolForms, onOpenFormModal, onDeleteForm, t }) {
+    const [deletingFormId, setDeletingFormId] = useState(null)
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    const handleConfirmDelete = async () => {
+        if (!deletingFormId) return
+        setIsDeleting(true)
+        try {
+            await onDeleteForm(deletingFormId)
+            setDeletingFormId(null)
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -46,7 +62,7 @@ export function SchoolFormsTab({ loading, schoolForms, onOpenFormModal, onDelete
                                     </button>
                                     <button
                                         onClick={() => {
-                                            if (confirm(t('confirm_delete_form'))) onDeleteForm(form.id)
+                                            setDeletingFormId(form.id)
                                         }}
                                         className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
                                         title={t('delete_school_form')}
@@ -67,6 +83,14 @@ export function SchoolFormsTab({ loading, schoolForms, onOpenFormModal, onDelete
                     ))}
                 </div>
             )}
+            <ConfirmModal
+                isOpen={!!deletingFormId}
+                onClose={() => setDeletingFormId(null)}
+                onConfirm={handleConfirmDelete}
+                isLoading={isDeleting}
+                title={t('delete_school_form')}
+                message={t('confirm_delete_form')}
+            />
         </div>
     )
 }

@@ -2,6 +2,7 @@ import { AlertCircle, CheckCircle2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
+import ConfirmModal from '../ui/ConfirmDeletionModal'
 import {
   addGuardian,
   deleteStudent,
@@ -41,6 +42,13 @@ export default function StudentsManager({ session }) {
   const [showEnrolmentModal, setShowEnrolmentModal] = useState(false)
   const [showGuardianModal, setShowGuardianModal] = useState(false)
   const [showBulkImportModal, setShowBulkImportModal] = useState(false)
+
+  // Confirmation Modal States
+  const [deletingStudentId, setDeletingStudentId] = useState(null)
+  const [isDeletingStudent, setIsDeletingStudent] = useState(false)
+
+  const [detachingGuardianId, setDetachingGuardianId] = useState(null)
+  const [isDetachingGuardian, setIsDetachingGuardian] = useState(false)
 
   // Selected Entities
   const [editingStudent, setEditingStudent] = useState(null)
@@ -92,6 +100,7 @@ export default function StudentsManager({ session }) {
     setShowStudentModal(true)
   }
 
+  // Student Creation / Update
   const handleSaveStudent = async (studentForm) => {
     try {
       await saveStudent(studentForm, editingStudent)
@@ -103,14 +112,19 @@ export default function StudentsManager({ session }) {
     }
   }
 
-  const handleDeleteStudent = async (studentId) => {
-    if (!confirm(t('confirm_delete_student'))) return
+  // Student Deletion
+  const handleConfirmDeleteStudent = async () => {
+    if (!deletingStudentId) return
+    setIsDeletingStudent(true)
     try {
-      await deleteStudent(studentId)
+      await deleteStudent(deletingStudentId)
       notifySuccess(t('student_deleted'))
+      setDeletingStudentId(null)
       loadStudents()
     } catch (err) {
       setError(err.message)
+    } finally {
+      setIsDeletingStudent(false)
     }
   }
 
@@ -147,14 +161,18 @@ export default function StudentsManager({ session }) {
     }
   }
 
-  const handleDetachGuardian = async (guardianId) => {
-    if (!confirm(t('confirm_delete'))) return
+  const handleConfirmDetachGuardian = async () => {
+    if (!detachingGuardianId || !selectedStudent) return
+    setIsDetachingGuardian(true)
     try {
-      await detachGuardian(selectedStudent.id, guardianId)
+      await detachGuardian(selectedStudent.id, detachingGuardianId)
       notifySuccess(t('guardian_detached'))
+      setDetachingGuardianId(null)
       loadStudents()
     } catch (err) {
       setError(err.message)
+    } finally {
+      setIsDetachingGuardian(false)
     }
   }
 
@@ -351,6 +369,32 @@ export default function StudentsManager({ session }) {
         onConfirmImport={handleConfirmImport}
         t={t}
       />
+
+      {/* Confirm Student Delete Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deletingStudentId)}
+        title={t('delete_student') || 'Delete Student'}
+        message={t('confirm_delete_student') || 'Are you sure you want to delete this student?'}
+        confirmText={t('delete') || 'Delete'}
+        cancelText={t('cancel') || 'Cancel'}
+        isLoading={isDeletingStudent}
+        onConfirm={handleConfirmDeleteStudent}
+        onClose={() => setDeletingStudentId(null)}
+      />
+
+      {/* Confirm Guardian Detach Modal */}
+      <ConfirmModal
+        isOpen={Boolean(detachingGuardianId)}
+        title={t('detach_guardian') || 'Detach Guardian'}
+        message={t('confirm_detach_guardian') || 'Are you sure you want to remove this guardian connection?'}
+        confirmText={t('detach') || 'Detach'}
+        cancelText={t('cancel') || 'Cancel'}
+        isLoading={isDetachingGuardian}
+        onConfirm={handleConfirmDetachGuardian}
+        onClose={() => setDetachingGuardianId(null)}
+      />
     </div>
+
+
   )
 }

@@ -1,6 +1,7 @@
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ConfirmModal from '../ui/ConfirmDeletionModal'
 import { planningApi } from './api/planningApi'
 import { PlanningFilterBar } from './PlanningFilterBar'
 import { PlanningHeader } from './PlanningHeader'
@@ -19,6 +20,8 @@ export default function PlanningTable({ session }) {
   const [selectedFormFilters, setSelectedFormFilters] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [dirtyIds, setDirtyIds] = useState(new Set())
+  const [deletingThemeId, setDeletingThemeId] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const loadData = useCallback(async () => {
     if (!session) return
@@ -92,24 +95,35 @@ export default function PlanningTable({ session }) {
     }
   }
 
-  const handleDeleteTheme = async (themeId) => {
-    if (!confirm(t('confirm_delete_theme') || 'Tem a certeza que pretende eliminar este tema?')) return
+  // 1. Called by the Trash Icon: ONLY sets the ID in state to open the modal
+  const handleRequestDelete = (themeId) => {
+    setDeletingThemeId(themeId)
+  }
+
+  // 2. Called by the Modal "Delete" Button: Executes the actual API call
+  const handleConfirmDelete = async () => {
+    if (!deletingThemeId) return
+
+    setIsDeleting(true)
     setSaving(true)
     setError(null)
     try {
-      await planningApi.deleteTheme(themeId)
-      setThemes((prev) => prev.filter((item) => item.id !== themeId))
+      await planningApi.deleteTheme(deletingThemeId)
+      setThemes((prev) => prev.filter((item) => item.id !== deletingThemeId))
       setDirtyIds((prev) => {
         const next = new Set(prev)
-        next.delete(themeId)
+        next.delete(deletingThemeId)
         return next
       })
+      setDeletingThemeId(null) // Close modal after successful deletion
     } catch (err) {
       setError(err.message)
     } finally {
+      setIsDeleting(false)
       setSaving(false)
     }
   }
+
 
   // Filter Logic: Form Filter + Theme Title Search Filter
   const filteredThemes = themes.filter((theme) => {
@@ -175,12 +189,22 @@ export default function PlanningTable({ session }) {
               isDirty={dirtyIds.has(unit.id)}
               onToggleExpand={() => handleToggleExpand(unit.id)}
               onFieldChange={handleFieldChange}
-              onDelete={handleDeleteTheme}
+              onDelete={handleRequestDelete}
               t={t}
             />
           ))
         )}
       </div>
+      <ConfirmModal
+        isOpen={Boolean(deletingThemeId)}
+        title={t('delete_theme') || 'Delete Theme'}
+        message={t('confirm_delete_theme') || 'Are you sure you want to delete this theme? This action cannot be undone.'}
+        confirmText={t('delete') || 'Delete'}
+        cancelText={t('cancel') || 'Cancel'}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setDeletingThemeId(null)}
+      />
     </div>
   )
 }
