@@ -54,7 +54,6 @@ export default function ImportModal({
     const isEverythingSelected =
         fields.summary && fields.attention_box && fields.teacher_notes && fields.lesson_number
 
-    // Toggle all fields ("Import Everything")
     const handleToggleEverything = () => {
         const nextState = !isEverythingSelected
         setFields({
@@ -65,7 +64,6 @@ export default function ImportModal({
         })
     }
 
-    // Fetch target lessons when updating existing lessons
     useEffect(() => {
         if (importMode === 'existing' && targetYearId && targetFormId) {
             setLoadingTargets(true)
@@ -83,7 +81,6 @@ export default function ImportModal({
         }
     }, [importMode, targetYearId, targetFormId, sourceLessonId])
 
-    // Auto-fetch next lesson number when creating a new lesson
     useEffect(() => {
         if (importMode === 'create' && targetYearId && targetFormId) {
             lessonApi
@@ -93,7 +90,6 @@ export default function ImportModal({
         }
     }, [importMode, targetYearId, targetFormId])
 
-    // Sync subject with selected source lesson
     useEffect(() => {
         if (selectedSourceLesson?.subject) {
             setNewLessonSubject(selectedSourceLesson.subject)
@@ -142,7 +138,6 @@ export default function ImportModal({
                     fields
                 })
             } else {
-                // Mode: Create New Lesson
                 if (!targetYearId || !targetFormId || !newLessonDate) {
                     setError(t('fill_required_target_fields') || 'Please fill in target year, group, and date.')
                     setImporting(false)
@@ -182,14 +177,14 @@ export default function ImportModal({
         (importMode === 'create' && (!targetYearId || !targetFormId || !newLessonDate))
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white">
-                    <h2 className="text-xl font-bold text-gray-900">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                         {t('import_summaries') || 'Import Lesson Content'}
                     </h2>
-                    <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                    <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                         <X size={20} />
                     </button>
                 </div>
@@ -197,7 +192,7 @@ export default function ImportModal({
                 {/* Scrollable Body */}
                 <div className="px-6 py-5 space-y-6 overflow-y-auto flex-1">
                     {error && (
-                        <div className="flex items-center gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-center gap-2 p-3 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-lg">
                             <AlertCircle size={16} className="flex-shrink-0" />
                             <span>{error}</span>
                         </div>
@@ -205,7 +200,7 @@ export default function ImportModal({
 
                     {/* SECTION 1: SOURCE LESSON */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             1. {t('source_lesson') || 'Select Source Lesson'}
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -216,7 +211,7 @@ export default function ImportModal({
                                     setSourceFormId('')
                                     setSourceLessonId('')
                                 }}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('select_year') || 'Select Year'}</option>
                                 {schoolYears.map((year) => (
@@ -230,7 +225,7 @@ export default function ImportModal({
                                     setSourceFormId(e.target.value)
                                     setSourceLessonId('')
                                 }}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('select_group') || 'Select Group'}</option>
                                 {schoolForms.map((form) => (
@@ -241,7 +236,7 @@ export default function ImportModal({
                             <select
                                 value={sourceLessonId}
                                 onChange={(e) => setSourceLessonId(e.target.value)}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800/50 disabled:text-gray-400 dark:disabled:text-gray-500"
                                 disabled={!sourceYearId || !sourceFormId}
                             >
                                 <option value="">{t('select_lesson') || 'Select Lesson'}</option>
@@ -256,9 +251,9 @@ export default function ImportModal({
                         </div>
 
                         {selectedSourceLesson && (
-                            <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs text-blue-900 space-y-1">
+                            <div className="p-3 bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-lg text-xs text-blue-900 dark:text-blue-200 space-y-1">
                                 <p className="font-semibold">{formatLessonNumber(selectedSourceLesson.lesson_number)} - {selectedSourceLesson.subject}</p>
-                                <p className="text-blue-700">{formatDate(selectedSourceLesson.date)}</p>
+                                <p className="text-blue-700 dark:text-blue-300">{formatDate(selectedSourceLesson.date)}</p>
                             </div>
                         )}
                     </div>
@@ -266,75 +261,75 @@ export default function ImportModal({
                     {/* SECTION 2: WHAT TO IMPORT */}
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 2. {t('what_to_import') || 'Select Content to Copy'}
                             </h3>
                             <button
                                 type="button"
                                 onClick={handleToggleEverything}
-                                className="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
                             >
                                 {isEverythingSelected ? (t('unselect_all') || 'Deselect All') : (t('import_everything') || 'Import Everything')}
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                        <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg">
+                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     checked={fields.summary}
                                     onChange={(e) => setFields({ ...fields, summary: e.target.checked })}
-                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 dark:bg-gray-800 dark:border-gray-600 rounded focus:ring-blue-500"
                                 />
                                 <span>{t('summary') || 'Summary'}</span>
                             </label>
 
-                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     checked={fields.attention_box}
                                     onChange={(e) => setFields({ ...fields, attention_box: e.target.checked })}
-                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 dark:bg-gray-800 dark:border-gray-600 rounded focus:ring-blue-500"
                                 />
                                 <span>{t('attention') || 'Attention Box'}</span>
                             </label>
 
-                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     checked={fields.teacher_notes}
                                     onChange={(e) => setFields({ ...fields, teacher_notes: e.target.checked })}
-                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 dark:bg-gray-800 dark:border-gray-600 rounded focus:ring-blue-500"
                                 />
                                 <span>{t('teacher_notes') || 'Teacher Notes'}</span>
                             </label>
 
-                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     checked={fields.lesson_number}
                                     onChange={(e) => setFields({ ...fields, lesson_number: e.target.checked })}
-                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 dark:bg-gray-800 dark:border-gray-600 rounded focus:ring-blue-500"
                                 />
                                 <span>{t('lesson_number') || 'Lesson Number & Subject'}</span>
                             </label>
                         </div>
                     </div>
 
-                    {/* SECTION 3: TARGET ACTION (UPDATE OR CREATE) */}
+                    {/* SECTION 3: TARGET DESTINATION */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             3. {t('target_destination') || 'Select Target Destination'}
                         </h3>
 
                         {/* Mode Selector Tabs */}
-                        <div className="flex border-b border-gray-200">
+                        <div className="flex border-b border-gray-200 dark:border-gray-800">
                             <button
                                 type="button"
                                 onClick={() => setImportMode('existing')}
                                 className={`flex items-center gap-2 py-2 px-4 text-xs font-bold border-b-2 transition-colors ${importMode === 'existing'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                             >
                                 <RefreshCw size={14} />
@@ -344,8 +339,8 @@ export default function ImportModal({
                                 type="button"
                                 onClick={() => setImportMode('create')}
                                 className={`flex items-center gap-2 py-2 px-4 text-xs font-bold border-b-2 transition-colors ${importMode === 'create'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                             >
                                 <PlusCircle size={14} />
@@ -353,7 +348,7 @@ export default function ImportModal({
                             </button>
                         </div>
 
-                        {/* Common Target Year and Group Dropdowns */}
+                        {/* Target Year and Group Dropdowns */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             <select
                                 value={targetYearId}
@@ -361,7 +356,7 @@ export default function ImportModal({
                                     setTargetYearId(e.target.value)
                                     setTargetFormId('')
                                 }}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('select_target_year') || 'Select Target Year'}</option>
                                 {schoolYears.map((year) => (
@@ -372,7 +367,7 @@ export default function ImportModal({
                             <select
                                 value={targetFormId}
                                 onChange={(e) => setTargetFormId(e.target.value)}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800/50 disabled:text-gray-400 dark:disabled:text-gray-500"
                                 disabled={!targetYearId}
                             >
                                 <option value="">{t('select_target_group') || 'Select Target Group'}</option>
@@ -384,14 +379,14 @@ export default function ImportModal({
 
                         {/* MODE A: UPDATE EXISTING LESSONS */}
                         {importMode === 'existing' && targetFormId && (
-                            <div className="border border-gray-200 rounded-lg overflow-hidden">
-                                <div className="p-2.5 bg-gray-50 border-b border-gray-200 flex items-center justify-between text-xs text-gray-600">
+                            <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                                <div className="p-2.5 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                                     <span>{targetLessons.length} {t('existing_lessons_found') || 'existing lessons found'}</span>
                                     {targetLessons.length > 0 && (
                                         <button
                                             type="button"
                                             onClick={handleSelectAllTargets}
-                                            className="font-semibold text-blue-600 hover:text-blue-800"
+                                            className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                                         >
                                             {selectedTargetIds.length === targetLessons.length
                                                 ? (t('deselect_all') || 'Deselect All')
@@ -400,14 +395,14 @@ export default function ImportModal({
                                     )}
                                 </div>
 
-                                <div className="max-h-40 overflow-y-auto divide-y divide-gray-100 p-1">
+                                <div className="max-h-40 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800 p-1">
                                     {loadingTargets ? (
-                                        <div className="p-4 text-center text-sm text-gray-500 flex items-center justify-center gap-2">
+                                        <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
                                             <Loader2 size={16} className="animate-spin" />
                                             {t('loading')}
                                         </div>
                                     ) : targetLessons.length === 0 ? (
-                                        <div className="p-4 text-center text-xs text-gray-400">
+                                        <div className="p-4 text-center text-xs text-gray-400 dark:text-gray-500">
                                             {t('no_lessons_in_target') || 'No existing lessons found in this group.'}
                                         </div>
                                     ) : (
@@ -417,20 +412,20 @@ export default function ImportModal({
                                                 <div
                                                     key={lesson.id}
                                                     onClick={() => handleTargetCheck(lesson.id)}
-                                                    className={`flex items-center gap-3 p-2.5 rounded-md cursor-pointer transition-colors ${isChecked ? 'bg-blue-50' : 'hover:bg-gray-50'
+                                                    className={`flex items-center gap-3 p-2.5 rounded-md cursor-pointer transition-colors ${isChecked ? 'bg-blue-50 dark:bg-blue-950/40' : 'hover:bg-gray-50 dark:hover:bg-gray-800/40'
                                                         }`}
                                                 >
                                                     {isChecked ? (
-                                                        <CheckSquare size={16} className="text-blue-600 flex-shrink-0" />
+                                                        <CheckSquare size={16} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
                                                     ) : (
-                                                        <Square size={16} className="text-gray-400 flex-shrink-0" />
+                                                        <Square size={16} className="text-gray-400 dark:text-gray-600 flex-shrink-0" />
                                                     )}
                                                     <div className="min-w-0 flex-1 text-xs">
-                                                        <span className="font-bold text-gray-900 mr-2">
+                                                        <span className="font-bold text-gray-900 dark:text-gray-100 mr-2">
                                                             {formatLessonNumber(lesson.lesson_number)}
                                                         </span>
-                                                        <span className="text-gray-600 mr-2">{lesson.subject}</span>
-                                                        <span className="text-gray-400">({formatDate(lesson.date)})</span>
+                                                        <span className="text-gray-600 dark:text-gray-300 mr-2">{lesson.subject}</span>
+                                                        <span className="text-gray-400 dark:text-gray-500">({formatDate(lesson.date)})</span>
                                                     </div>
                                                 </div>
                                             )
@@ -442,22 +437,22 @@ export default function ImportModal({
 
                         {/* MODE B: CREATE NEW LESSON */}
                         {importMode === 'create' && targetFormId && (
-                            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
+                            <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg space-y-3">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                                             {t('date') || 'Lesson Date'}
                                         </label>
                                         <input
                                             type="date"
                                             value={newLessonDate}
                                             onChange={(e) => setNewLessonDate(e.target.value)}
-                                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                            className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 [color-scheme:light] dark:[color-scheme:dark]"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                                             {t('lesson_number') || 'Lesson Number'}
                                         </label>
                                         <input
@@ -465,25 +460,25 @@ export default function ImportModal({
                                             value={fields.lesson_number ? (selectedSourceLesson?.lesson_number || '') : newLessonNumber}
                                             onChange={(e) => setNewLessonNumber(e.target.value)}
                                             disabled={fields.lesson_number}
-                                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                                            className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800/50 disabled:text-gray-500 dark:disabled:text-gray-500"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                                         {t('subject') || 'Subject / Title'}
                                     </label>
                                     <select
                                         value={fields.lesson_number ? (selectedSourceLesson?.subject || '') : newLessonSubject}
                                         onChange={(e) => setNewLessonSubject(e.target.value)}
                                         disabled={fields.lesson_number}
-                                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                                        className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800/50 disabled:text-gray-500 dark:disabled:text-gray-500"
                                     >
                                         <option value="">— {t('select_subject')} —</option>
                                         {availableSubjects.map((subject) => (
-                                            <option key={subject.id} value={subject.id}>
-                                                {subject.name}
+                                            <option key={subject} value={subject}>
+                                                {subject}
                                             </option>
                                         ))}
                                     </select>
@@ -494,10 +489,10 @@ export default function ImportModal({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                         {t('cancel') || 'Cancel'}
                     </button>
