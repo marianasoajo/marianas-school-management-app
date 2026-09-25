@@ -74,13 +74,20 @@ export default function LessonPresentation({ session }) {
       />
 
       {/* Main List */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900">{t('past_future_summary')}</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        {/* Card Header */}
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {t('past_future_summary')}
+          </h3>
         </div>
-        <div className="divide-y divide-gray-200">
+
+        {/* Card Content */}
+        <div className="divide-y divide-gray-200 dark:divide-gray-800">
           {lessons.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">{t('no_lessons')}</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+              {t('no_lessons')}
+            </div>
           ) : (
             lessons.map((lesson) => (
               <LessonCard
