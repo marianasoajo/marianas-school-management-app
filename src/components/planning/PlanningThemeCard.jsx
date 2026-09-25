@@ -17,10 +17,33 @@ export function PlanningThemeCard({
     const [isEditing, setIsEditing] = useState(false)
     const assignedFormIds = unit.form_ids || []
 
+    // Extract unique year levels (e.g., "7º", "8º", "10º") from schoolForms
+    const yearLevels = Array.from(new Set(schoolForms.map((f) => f.year_level))).filter(Boolean)
+
     const handleFormToggle = (formId) => {
         const nextForms = assignedFormIds.includes(formId)
             ? assignedFormIds.filter((id) => id !== formId)
             : [...assignedFormIds, formId]
+
+        onFieldChange(unit.id, 'form_ids', nextForms)
+    }
+
+    // Toggle all classes for a specific year level
+    const handleToggleYearLevel = (yearLevel) => {
+        const formIdsInYear = schoolForms
+            .filter((f) => f.year_level === yearLevel)
+            .map((f) => f.id)
+
+        const allSelected = formIdsInYear.length > 0 && formIdsInYear.every((id) => assignedFormIds.includes(id))
+
+        let nextForms
+        if (allSelected) {
+            // Deselect all classes of this year level
+            nextForms = assignedFormIds.filter((id) => !formIdsInYear.includes(id))
+        } else {
+            // Select all classes of this year level (without duplicates)
+            nextForms = Array.from(new Set([...assignedFormIds, ...formIdsInYear]))
+        }
 
         onFieldChange(unit.id, 'form_ids', nextForms)
     }
@@ -150,11 +173,43 @@ export function PlanningThemeCard({
                     {/* EDITABLE VIEW */}
                     {isEditing ? (
                         <div className="space-y-5 pt-2">
-                            {/* Multi-Form Assignment Pills */}
-                            <div className="space-y-1.5 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-lg border border-gray-200/80 dark:border-gray-800">
-                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('assign_to_forms') || 'Turmas Associadas a este Tema'}:
-                                </label>
+                            {/* Multi-Form Assignment Pills & Shortcuts */}
+                            <div className="space-y-2 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-lg border border-gray-200/80 dark:border-gray-800">
+                                <div className="flex items-center justify-between flex-wrap gap-2">
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        {t('assign_to_forms') || 'Turmas Associadas a este Tema'}:
+                                    </label>
+
+                                    {/* Level Shortcuts */}
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className="text-[10px] font-semibold uppercase text-gray-400 dark:text-gray-500">
+                                            {t('apply_all') || 'Atalho Ano'}:
+                                        </span>
+                                        {yearLevels.map((yearLevel) => {
+                                            const formIdsInYear = schoolForms
+                                                .filter((f) => f.year_level === yearLevel)
+                                                .map((f) => f.id)
+                                            const allSelected =
+                                                formIdsInYear.length > 0 &&
+                                                formIdsInYear.every((id) => assignedFormIds.includes(id))
+
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    key={yearLevel}
+                                                    onClick={() => handleToggleYearLevel(yearLevel)}
+                                                    className={`px-2 py-0.5 text-[11px] font-semibold rounded transition-colors ${allSelected
+                                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-300 dark:border-blue-700'
+                                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                                        }`}
+                                                >
+                                                    {allSelected ? `✓ ${yearLevel}` : `+ ${yearLevel}`} {t('year') || 'Ano'}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+
                                 <div className="flex flex-wrap gap-2 pt-1">
                                     {schoolForms.map((form) => {
                                         const isAssigned = assignedFormIds.includes(form.id)
@@ -262,7 +317,6 @@ export function PlanningThemeCard({
                     ) : (
                         /* READ-ONLY VIEW */
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
-                            {/* Activities */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('activities') || 'Atividades Planeadas'}
@@ -274,7 +328,6 @@ export function PlanningThemeCard({
                                 )}
                             </div>
 
-                            {/* Registers / Notes */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('registers') || 'Registos / Observações'}
@@ -286,7 +339,6 @@ export function PlanningThemeCard({
                                 )}
                             </div>
 
-                            {/* Physical Resources */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('resources_physical') || 'Recursos Físicos'}
@@ -298,7 +350,6 @@ export function PlanningThemeCard({
                                 )}
                             </div>
 
-                            {/* Digital Resources */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('resources_digital') || 'Recursos Digitais'}
@@ -310,7 +361,6 @@ export function PlanningThemeCard({
                                 )}
                             </div>
 
-                            {/* Physical Exercises */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('exercises_physical') || 'Exercícios Físicos / Fichas'}
@@ -322,7 +372,6 @@ export function PlanningThemeCard({
                                 )}
                             </div>
 
-                            {/* Digital Exercises */}
                             <div className="p-3 bg-gray-50/70 dark:bg-gray-800/40 rounded-lg border border-gray-200/60 dark:border-gray-800">
                                 <span className="block font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                     {t('exercises_digital') || 'Exercícios Digitais / Quiz'}

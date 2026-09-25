@@ -162,6 +162,7 @@ const resources = {
       "year_created": "Academic year created successfully",
       "year_updated": "Academic year updated successfully",
       "year_deleted": "Academic year deleted successfully",
+      "year": "Year",
       "confirm_delete_year": "Are you sure you want to delete this academic year?",
       "add_school_form": "Add School Form",
       "edit_school_form": "Edit School Form",
@@ -252,7 +253,8 @@ const resources = {
       "search_theme_placeholder": "Search by theme title",
       "assign_to_forms": "Assign to School Forms (Multi-Select)",
       "all_forms": "Todas as Turmas",
-      "done": "Done"
+      "done": "Done",
+      "apply_all": "Apply to All"
     }
   },
   pt: {
@@ -414,6 +416,7 @@ const resources = {
       "year_created": "Ano letivo criado com sucesso",
       "year_updated": "Ano letivo atualizado com sucesso",
       "year_deleted": "Ano letivo eliminado com sucesso",
+      "year": "Ano",
       "confirm_delete_year": "Tem certeza de que deseja eliminar este ano letivo? Esta ação não pode ser desfeita.",
       "add_school_form": "Adicionar Turma",
       "edit_school_form": "Editar Turma",
@@ -504,7 +507,8 @@ const resources = {
       "search_theme_placeholder": "Pesquisar por título do tema",
       "assign_to_forms": "Atribuir a Turmas (Multi-seleção)",
       "all_forms": "Todas as Turmas",
-      "done": "Concluído"
+      "done": "Concluído",
+      "apply_all": "Aplicar a Todos"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Loader2, Plus, Save } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 export function PlanningHeader({ onSave, onCreateTheme, saving, dirtyCount, t }) {
     return (
@@ -13,14 +13,6 @@ export function PlanningHeader({ onSave, onCreateTheme, saving, dirtyCount, t })
             </div>
 
             <div className="flex items-center gap-2">
-                <button
-                    onClick={onSave}
-                    disabled={saving || dirtyCount === 0}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
-                >
-                    {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                    {t('save') || 'Guardar'}
-                </button>
                 <button
                     onClick={onCreateTheme}
                     disabled={saving}
