@@ -268,6 +268,7 @@ export default function StudentsManager({ session }) {
       process_number: editingStudent.process_number || '',
       name: editingStudent.name || '',
       birthdate: editingStudent.birthdate || '',
+      photo_url: editingStudent.photo_url || '',
       school_year_id: editingStudent.currentEnrolment?.school_year_id || '',
       school_form_id: editingStudent.currentEnrolment?.school_form_id || '',
       group_number: editingStudent.currentEnrolment?.group_number || '',
@@ -280,6 +281,7 @@ export default function StudentsManager({ session }) {
       process_number: '',
       name: '',
       birthdate: '',
+      photo_url: '',
       school_year_id: filterYearId || schoolYears.find((y) => y.is_active)?.id || '',
       school_form_id: filterFormId || schoolForms[0]?.id || '',
       group_number: '',
@@ -344,6 +346,7 @@ export default function StudentsManager({ session }) {
         isOpen={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         student={selectedStudent}
+        onEditStudent={handleOpenEditStudent}
         t={t}
       />
 

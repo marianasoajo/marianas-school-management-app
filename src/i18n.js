@@ -260,7 +260,7 @@ const resources = {
       "student_info": "Student Information",
       "student_details": "Student Details",
       "enrol_student": "Enrol Student",
-
+      "upload_image": "Carregar Imagem",
     }
   },
   pt: {
@@ -520,6 +520,7 @@ const resources = {
       "student_info": "Informações do Aluno",
       "student_details": "Detalhes do Aluno",
       "enrol_student": "Inscrever Aluno",
+      "upload_image": "Carregar Imagem",
     }
   }
 }

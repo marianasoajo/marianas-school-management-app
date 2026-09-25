@@ -96,7 +96,8 @@ export const saveStudent = async (studentForm, editingStudent = null) => {
             .update({
                 process_number: studentForm.process_number,
                 name: studentForm.name,
-                birthdate: studentForm.birthdate || null
+                birthdate: studentForm.birthdate || null,
+                photo_url: studentForm.photo_url || null
             })
             .eq('id', studentId)
 
@@ -107,7 +108,8 @@ export const saveStudent = async (studentForm, editingStudent = null) => {
             .insert({
                 process_number: studentForm.process_number,
                 name: studentForm.name,
-                birthdate: studentForm.birthdate || null
+                birthdate: studentForm.birthdate || null,
+                photo_url: studentForm.photo_url || null
             })
             .select()
             .single()

@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Image, Upload, X } from 'lucide-react'
 import { useState } from 'react'
 import { DateInput } from '../../ui/DateInput'
 import { SchoolFormSelect } from '../../ui/SchoolFormSelect'
@@ -21,6 +21,17 @@ export function StudentFormModal({
 
     if (!isOpen) return null
 
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            setForm((prev) => ({ ...prev, photo_url: reader.result }))
+        }
+        reader.readAsDataURL(file)
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
         onSave(form)
@@ -29,7 +40,7 @@ export function StudentFormModal({
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto text-gray-900 dark:text-gray-100 transition-colors">
-                <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between">
+                <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between z-10">
                     <h2 className="text-xl font-bold">
                         {editingStudent ? t('edit_student') : t('create_student')}
                     </h2>
@@ -39,6 +50,41 @@ export function StudentFormModal({
                 </div>
 
                 <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
+                    {/* Photo Upload / URL Section */}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            {t('student_photo') || 'Fotografia do Aluno'}
+                        </label>
+                        <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 flex items-center justify-center shrink-0">
+                                {form.photo_url ? (
+                                    <img src={form.photo_url} alt="Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Image size={24} className="text-gray-400" />
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                                <input
+                                    type="text"
+                                    placeholder="https://example.com/photo.jpg"
+                                    value={form.photo_url || ''}
+                                    onChange={(e) => setForm({ ...form, photo_url: e.target.value })}
+                                    className="w-full h-9 px-3 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md"
+                                />
+                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                    <Upload size={14} />
+                                    <span>{t('upload_image') || 'Carregar Ficheiro'}</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handlePhotoUpload}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-1">{t('process_number')} *</label>
                         <input

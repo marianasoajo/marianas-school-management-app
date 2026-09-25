@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, Pencil, Trash2, UserCheck, Users } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, Pencil, Trash2, User, UserCheck, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 export function StudentTable({
@@ -11,7 +11,6 @@ export function StudentTable({
     onViewDetails,
     t
 }) {
-    // Sort State: default sort by student name ascending
     const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' })
 
     const handleSort = (key) => {
@@ -146,9 +145,18 @@ export function StudentTable({
                                     {student.currentEnrolment?.group_number || '—'}
                                 </td>
 
-                                {/* Full Name */}
+                                {/* Full Name + Photo Avatar */}
                                 <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {student.name}
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-700 shrink-0 flex items-center justify-center">
+                                            {student.photo_url ? (
+                                                <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <User size={14} className="text-gray-400" />
+                                            )}
+                                        </div>
+                                        <span>{student.name}</span>
+                                    </div>
                                 </td>
 
                                 {/* Birthdate */}
