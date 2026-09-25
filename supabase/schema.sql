@@ -26,6 +26,7 @@ CREATE TABLE students (
   process_number TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   birthdate DATE,
+  photo_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
