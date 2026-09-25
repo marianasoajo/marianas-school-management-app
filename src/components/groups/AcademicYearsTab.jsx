@@ -1,4 +1,6 @@
 import { CheckCircle2, Loader2, Pencil, Plus, Trash2, Users } from 'lucide-react'
+import { useState } from 'react'
+import ConfirmModal from '../ui/ConfirmDeletionModal'
 
 export function AcademicYearsTab({
     loading,
@@ -14,6 +16,20 @@ export function AcademicYearsTab({
         if (!dateStr) return ''
         const [year, month, day] = dateStr.split('T')[0].split('-')
         return `${day}/${month}/${year}`
+    }
+
+    const [deletingYearId, setDeletingYearId] = useState(null)
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    const handleConfirmDelete = async () => {
+        if (!deletingYearId) return
+        setIsDeleting(true)
+        try {
+            await onDeleteYear(deletingYearId)
+            setDeletingYearId(null)
+        } finally {
+            setIsDeleting(false)
+        }
     }
 
     return (
@@ -76,9 +92,7 @@ export function AcademicYearsTab({
                                         <Pencil size={15} />
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            if (confirm(t('confirm_delete_year'))) onDeleteYear(year.id)
-                                        }}
+                                        onClick={() => { setDeletingYearId(year.id) }}
                                         className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
                                         title={t('delete_academic_year')}
                                     >
@@ -114,6 +128,17 @@ export function AcademicYearsTab({
                     ))}
                 </div>
             )}
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={Boolean(deletingYearId)}
+                title={t('delete_academic_year') || 'Delete Academic Year'}
+                message={t('confirm_delete_year') || 'Are you sure you want to delete this academic year? This action cannot be undone.'}
+                confirmText={t('delete') || 'Delete'}
+                cancelText={t('cancel') || 'Cancel'}
+                isLoading={isDeleting}
+                onConfirm={handleConfirmDelete}
+                onClose={() => setDeletingYearId(null)}
+            />
         </div>
     )
 }

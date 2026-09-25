@@ -1,6 +1,7 @@
 import { AlertCircle, Eye, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useFormatters } from '../../utils/formatters'
+import ConfirmModal from '../ui/ConfirmDeletionModal'
 import { useLessons } from './hooks/useLessons'
 
 import OralEvaluation from '../evaluation/OralEvaluation'
@@ -19,6 +20,8 @@ export default function LessonPresentation({ session }) {
   const [editingLessonModal, setEditingLessonModal] = useState({ open: false, lesson: null })
   const [showImportModal, setShowImportModal] = useState(false)
   const [evaluationLessonId, setEvaluationLessonId] = useState(null)
+  const [deletingLessonId, setDeletingLessonId] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const {
     lessons,
@@ -43,6 +46,17 @@ export default function LessonPresentation({ session }) {
   }, [schoolYears, filters.yearId])
 
   const selectedLesson = lessons.find((l) => l.id === selectedLessonId) || null
+
+  const handleConfirmDelete = async () => {
+    if (!deletingLessonId) return
+    setIsDeleting(true)
+    try {
+      await deleteLesson(deletingLessonId)
+      setDeletingLessonId(null)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   if (loading && lessons.length === 0) {
     return (
@@ -98,9 +112,7 @@ export default function LessonPresentation({ session }) {
                 onOpenStudentView={() => setStudentViewLesson(lesson)}
                 onOpenEvaluation={() => setEvaluationLessonId(lesson.id)}
                 onEdit={() => setEditingLessonModal({ open: true, lesson })}
-                onDelete={() => {
-                  if (confirm(t('confirm_delete'))) deleteLesson(lesson.id)
-                }}
+                onDelete={() => setDeletingLessonId(lesson.id)}
                 formatters={formatters}
               />
             ))
@@ -118,6 +130,18 @@ export default function LessonPresentation({ session }) {
           {t('student_view')}
         </button>
       )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deletingLessonId)}
+        title={t('delete_lesson') || 'Delete Lesson'}
+        message={t('confirm_delete') || 'Are you sure you want to delete this lesson? This action cannot be undone.'}
+        confirmText={t('delete') || 'Delete'}
+        cancelText={t('cancel') || 'Cancel'}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setDeletingLessonId(null)}
+      />
 
       {/* Overlays / Modals */}
       {studentViewLesson && (
