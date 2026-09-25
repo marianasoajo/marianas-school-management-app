@@ -15,6 +15,7 @@ import {
 import { BulkImportModal } from './modals/BulkImportModal'
 import { EnrolmentModal } from './modals/EnrolmentModal'
 import { GuardianModal } from './modals/GuardianModal'
+import { StudentDetailsModal } from './modals/StudentDetailsModal'
 import { StudentFormModal } from './modals/StudentFormModal'
 import { StudentFilterBar } from './StudentFilterBar'
 import { StudentTable } from './StudentTable'
@@ -42,6 +43,7 @@ export default function StudentsManager({ session }) {
   const [showEnrolmentModal, setShowEnrolmentModal] = useState(false)
   const [showGuardianModal, setShowGuardianModal] = useState(false)
   const [showBulkImportModal, setShowBulkImportModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
 
   // Confirmation Modal States
   const [deletingStudentId, setDeletingStudentId] = useState(null)
@@ -54,7 +56,6 @@ export default function StudentsManager({ session }) {
   const [editingStudent, setEditingStudent] = useState(null)
   const [selectedStudent, setSelectedStudent] = useState(null)
 
-  // Fetch Metadata
   useEffect(() => {
     if (!session) return
     fetchMetadata()
@@ -65,7 +66,6 @@ export default function StudentsManager({ session }) {
       .catch((err) => setError(err.message))
   }, [session])
 
-  // Fetch Students
   const loadStudents = async () => {
     if (!session) return
     setLoading(true)
@@ -89,7 +89,7 @@ export default function StudentsManager({ session }) {
     setTimeout(() => setSuccessMessage(null), 3000)
   }
 
-  // Student Create / Edit Actions
+  // Student Actions
   const handleOpenAddStudent = () => {
     setEditingStudent(null)
     setShowStudentModal(true)
@@ -100,7 +100,11 @@ export default function StudentsManager({ session }) {
     setShowStudentModal(true)
   }
 
-  // Student Creation / Update
+  const handleViewDetails = (student) => {
+    setSelectedStudent(student)
+    setShowDetailsModal(true)
+  }
+
   const handleSaveStudent = async (studentForm) => {
     try {
       await saveStudent(studentForm, editingStudent)
@@ -112,7 +116,11 @@ export default function StudentsManager({ session }) {
     }
   }
 
-  // Student Deletion
+  // Delete Request & Execution Fix
+  const handleRequestDeleteStudent = (studentId) => {
+    setDeletingStudentId(studentId)
+  }
+
   const handleConfirmDeleteStudent = async () => {
     if (!deletingStudentId) return
     setIsDeletingStudent(true)
@@ -326,11 +334,19 @@ export default function StudentsManager({ session }) {
         onEditStudent={handleOpenEditStudent}
         onEnrolStudent={handleOpenEnrolment}
         onManageGuardians={handleOpenGuardians}
-        onDeleteStudent={handleDeleteStudent}
+        onDeleteStudent={handleRequestDeleteStudent}
+        onViewDetails={handleViewDetails}
         t={t}
       />
 
       {/* Modals */}
+      <StudentDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        student={selectedStudent}
+        t={t}
+      />
+
       <StudentFormModal
         isOpen={showStudentModal}
         onClose={() => setShowStudentModal(false)}
@@ -357,7 +373,7 @@ export default function StudentsManager({ session }) {
         onClose={() => setShowGuardianModal(false)}
         selectedStudent={selectedStudent}
         onAddGuardian={handleAddGuardian}
-        onDetachGuardian={handleDetachGuardian}
+        onDetachGuardian={handleConfirmDetachGuardian}
         t={t}
       />
 
@@ -394,7 +410,5 @@ export default function StudentsManager({ session }) {
         onClose={() => setDetachingGuardianId(null)}
       />
     </div>
-
-
   )
 }

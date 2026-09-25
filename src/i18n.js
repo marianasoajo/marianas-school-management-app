@@ -257,6 +257,10 @@ const resources = {
       "apply_all": "Apply to All",
       "single_date": "Single Date",
       "date_range": "Date Range",
+      "student_info": "Student Information",
+      "student_details": "Student Details",
+      "enrol_student": "Enrol Student",
+
     }
   },
   pt: {
@@ -513,6 +517,9 @@ const resources = {
       "apply_all": "Aplicar a Todos",
       "single_date": "Data Única",
       "date_range": "Intervalo de Datas",
+      "student_info": "Informações do Aluno",
+      "student_details": "Detalhes do Aluno",
+      "enrol_student": "Inscrever Aluno",
     }
   }
 }
