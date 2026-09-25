@@ -252,6 +252,7 @@ const resources = {
       "search_theme_placeholder": "Search by theme title",
       "assign_to_forms": "Assign to School Forms (Multi-Select)",
       "all_forms": "Todas as Turmas",
+      "done": "Done"
     }
   },
   pt: {
@@ -293,7 +294,7 @@ const resources = {
       "delete_row": "Eliminar Linha",
       "save": "Guardar",
       "loading": "A carregar…",
-      "no_units": "Sem unidades de planificação. Clique em \\\"Adicionar Linha\\\" para começar.",
+      "no_units": "Sem unidades de planificação. Clique em \\\"Adicionar Tema\\\" para começar.",
       "new_theme_placeholder": "Novo tema",
       "select_lesson": "Selecionar Lição",
       "source_lesson": "Lição de Origem",
@@ -503,6 +504,7 @@ const resources = {
       "search_theme_placeholder": "Pesquisar por título do tema",
       "assign_to_forms": "Atribuir a Turmas (Multi-seleção)",
       "all_forms": "Todas as Turmas",
+      "done": "Concluído"
     }
   }
 }

@@ -63,7 +63,6 @@ export default function PlanningTable({ session }) {
     setDirtyIds((prev) => new Set(prev).add(themeId))
   }
 
-  // Direct inline theme creation
   const handleCreateTheme = async () => {
     setSaving(true)
     setError(null)
@@ -95,12 +94,10 @@ export default function PlanningTable({ session }) {
     }
   }
 
-  // 1. Called by the Trash Icon: ONLY sets the ID in state to open the modal
   const handleRequestDelete = (themeId) => {
     setDeletingThemeId(themeId)
   }
 
-  // 2. Called by the Modal "Delete" Button: Executes the actual API call
   const handleConfirmDelete = async () => {
     if (!deletingThemeId) return
 
@@ -115,7 +112,7 @@ export default function PlanningTable({ session }) {
         next.delete(deletingThemeId)
         return next
       })
-      setDeletingThemeId(null) // Close modal after successful deletion
+      setDeletingThemeId(null)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -124,8 +121,6 @@ export default function PlanningTable({ session }) {
     }
   }
 
-
-  // Filter Logic: Form Filter + Theme Title Search Filter
   const filteredThemes = themes.filter((theme) => {
     const matchesForm =
       selectedFormFilters.length === 0 ||
@@ -174,27 +169,34 @@ export default function PlanningTable({ session }) {
         t={t}
       />
 
-      <div className="space-y-3">
-        {filteredThemes.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400 border border-dashed border-gray-300 dark:border-gray-800 rounded-lg">
-            {t('no_units') || 'Nenhum tema de planeamento encontrado.'}
-          </div>
-        ) : (
-          filteredThemes.map((unit) => (
-            <PlanningThemeCard
-              key={unit.id}
-              unit={unit}
-              schoolForms={schoolForms}
-              isExpanded={expandedThemeIds.has(unit.id)}
-              isDirty={dirtyIds.has(unit.id)}
-              onToggleExpand={() => handleToggleExpand(unit.id)}
-              onFieldChange={handleFieldChange}
-              onDelete={handleRequestDelete}
-              t={t}
-            />
-          ))
-        )}
+      {/* Structured Card List matching LessonPresentation layout */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+
+        {/* Card List Items */}
+        <div className="divide-y divide-gray-200 dark:divide-gray-800">
+          {filteredThemes.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+              {t('no_units') || 'Nenhum tema de planeamento encontrado.'}
+            </div>
+          ) : (
+            filteredThemes.map((unit) => (
+              <PlanningThemeCard
+                key={unit.id}
+                unit={unit}
+                schoolForms={schoolForms}
+                isExpanded={expandedThemeIds.has(unit.id)}
+                isDirty={dirtyIds.has(unit.id)}
+                onToggleExpand={() => handleToggleExpand(unit.id)}
+                onFieldChange={handleFieldChange}
+                onSave={handleSave}
+                onDelete={handleRequestDelete}
+                t={t}
+              />
+            ))
+          )}
+        </div>
       </div>
+
       <ConfirmModal
         isOpen={Boolean(deletingThemeId)}
         title={t('delete_theme') || 'Delete Theme'}
