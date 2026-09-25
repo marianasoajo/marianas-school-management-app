@@ -11,7 +11,7 @@ export const lessonApi = {
         return { schoolYears: yearsRes.data || [], schoolForms: formsRes.data || [] }
     },
 
-    async fetchFiltered({ yearId, formId, date }) {
+    async fetchFiltered({ yearId, formId, dateMode = 'single', date, startDate, endDate }) {
         let query = supabase
             .from('lessons')
             .select('*, school_years (label), school_forms (year_level, class_section)')
@@ -19,7 +19,13 @@ export const lessonApi = {
 
         if (yearId) query = query.eq('school_year_id', yearId)
         if (formId) query = query.eq('school_form_id', formId)
-        if (date) query = query.eq('date', date)
+
+        if (dateMode === 'range') {
+            if (startDate) query = query.gte('date', startDate)
+            if (endDate) query = query.lte('date', endDate)
+        } else {
+            if (date) query = query.eq('date', date)
+        }
 
         const { data, error } = await query
         if (error) throw error

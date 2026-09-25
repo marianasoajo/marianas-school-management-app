@@ -15,7 +15,14 @@ export default function LessonPresentation({ session }) {
   const formatters = useFormatters()
   const { t } = formatters
 
-  const [filters, setFilters] = useState({ yearId: '', formId: '', date: '' })
+  const [filters, setFilters] = useState({
+    yearId: '',
+    formId: '',
+    dateMode: 'single', // 'single' | 'range'
+    date: '',
+    startDate: '',
+    endDate: ''
+  })
   const [studentViewLesson, setStudentViewLesson] = useState(null)
   const [editingLessonModal, setEditingLessonModal] = useState({ open: false, lesson: null })
   const [showImportModal, setShowImportModal] = useState(false)

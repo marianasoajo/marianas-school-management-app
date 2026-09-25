@@ -254,7 +254,9 @@ const resources = {
       "assign_to_forms": "Assign to School Forms (Multi-Select)",
       "all_forms": "Todas as Turmas",
       "done": "Done",
-      "apply_all": "Apply to All"
+      "apply_all": "Apply to All",
+      "single_date": "Single Date",
+      "date_range": "Date Range",
     }
   },
   pt: {
@@ -508,7 +510,9 @@ const resources = {
       "assign_to_forms": "Atribuir a Turmas (Multi-seleção)",
       "all_forms": "Todas as Turmas",
       "done": "Concluído",
-      "apply_all": "Aplicar a Todos"
+      "apply_all": "Aplicar a Todos",
+      "single_date": "Data Única",
+      "date_range": "Intervalo de Datas",
     }
   }
 }
