@@ -1,4 +1,4 @@
-import { AlertCircle, Eye, Loader2 } from 'lucide-react'
+import { AlertCircle, ClipboardCopy, Eye, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useFormatters } from '../../utils/formatters'
 import ConfirmModal from '../ui/ConfirmDeletionModal'
@@ -29,6 +29,7 @@ export default function LessonPresentation({ session }) {
   const [evaluationLessonId, setEvaluationLessonId] = useState(null)
   const [deletingLessonId, setDeletingLessonId] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [clipboardStatus, setClipboardStatus] = useState('idle')
 
   const {
     lessons,
@@ -53,6 +54,26 @@ export default function LessonPresentation({ session }) {
   }, [schoolYears, filters.yearId])
 
   const selectedLesson = lessons.find((l) => l.id === selectedLessonId) || null
+
+  useEffect(() => {
+    setClipboardStatus('idle')
+  }, [selectedLessonId])
+
+  const handleCopySummaryAndOpenSite = async () => {
+    const summaryDocument = new DOMParser().parseFromString(selectedLesson.summary || '', 'text/html')
+    summaryDocument.body.querySelectorAll('br').forEach((element) => element.replaceWith('\n'))
+    summaryDocument.body.querySelectorAll('p, div, li').forEach((element) => element.append('\n'))
+    const summaryText = summaryDocument.body.textContent.replace(/\n{3,}/g, '\n\n').trim()
+
+    window.open('https://aemaximinos.inovarmais.com/Alunos/Inicial.wgx', '_blank', 'noopener,noreferrer')
+
+    try {
+      await navigator.clipboard.writeText(summaryText)
+      setClipboardStatus('copied')
+    } catch {
+      setClipboardStatus('failed')
+    }
+  }
 
   const handleConfirmDelete = async () => {
     if (!deletingLessonId) return
@@ -129,13 +150,27 @@ export default function LessonPresentation({ session }) {
 
       {/* Student View Floating Action Button */}
       {selectedLesson && (
-        <button
-          onClick={() => setStudentViewLesson(selectedLesson)}
-          className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-green-600 rounded-full shadow-lg hover:bg-green-700 transition-colors z-10"
-        >
-          <Eye size={18} />
-          {t('student_view')}
-        </button>
+        <div className="fixed bottom-6 right-6 z-10 flex flex-col items-end gap-2 sm:flex-row">
+          <button
+            onClick={handleCopySummaryAndOpenSite}
+            className="flex items-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-lg transition-colors hover:bg-blue-700"
+            aria-label={t('copy_summary_open_site')}
+          >
+            <ClipboardCopy size={18} />
+            {clipboardStatus === 'copied'
+              ? t('summary_copied')
+              : clipboardStatus === 'failed'
+                ? t('summary_copy_failed')
+                : t('copy_summary_open_site')}
+          </button>
+          <button
+            onClick={() => setStudentViewLesson(selectedLesson)}
+            className="flex items-center gap-2 rounded-full bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-lg transition-colors hover:bg-green-700"
+          >
+            <Eye size={18} />
+            {t('student_view')}
+          </button>
+        </div>
       )}
 
       {/* Confirm Delete Modal */}
