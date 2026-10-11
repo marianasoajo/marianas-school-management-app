@@ -132,3 +132,67 @@ CREATE POLICY "Allow public access" ON planning_units FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON planning_unit_forms FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON lessons FOR ALL USING (true);
 CREATE POLICY "Allow public access" ON evaluations FOR ALL USING (true);
+
+
+-- 1. Helper function to re-number lessons sequentially by date for a given year & form
+CREATE OR REPLACE FUNCTION renumber_lessons_for_group(p_year_id UUID, p_form_id UUID)
+RETURNS VOID AS $$
+DECLARE
+  r RECORD;
+  i INT := 1;
+BEGIN
+  FOR r IN 
+    SELECT id, lesson_number 
+    FROM lessons 
+    WHERE school_year_id = p_year_id 
+      AND school_form_id = p_form_id
+    ORDER BY date ASC, created_at ASC
+  LOOP
+    -- Only update if the lesson_number differs to minimize write overhead
+    IF r.lesson_number IS DISTINCT FROM i::text THEN
+      UPDATE lessons 
+      SET lesson_number = i::text 
+      WHERE id = r.id;
+    END IF;
+    i := i + 1;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Trigger function that handles INSERT, UPDATE, and DELETE
+CREATE OR REPLACE FUNCTION trigger_renumber_lessons()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Prevent recursive trigger invocation during internal UPDATEs
+  IF pg_trigger_depth() > 1 THEN
+    RETURN NULL;
+  END IF;
+
+  -- Handle DELETE or OLD group on UPDATE
+  IF (TG_OP = 'DELETE' OR TG_OP = 'UPDATE') THEN
+    IF OLD.school_year_id IS NOT NULL AND OLD.school_form_id IS NOT NULL THEN
+      PERFORM renumber_lessons_for_group(OLD.school_year_id, OLD.school_form_id);
+    END IF;
+  END IF;
+
+  -- Handle INSERT or NEW group/date on UPDATE
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF NEW.school_year_id IS NOT NULL AND NEW.school_form_id IS NOT NULL THEN
+      IF (TG_OP = 'INSERT') OR 
+         (NEW.school_year_id <> OLD.school_year_id OR NEW.school_form_id <> OLD.school_form_id OR NEW.date <> OLD.date) THEN
+        PERFORM renumber_lessons_for_group(NEW.school_year_id, NEW.school_form_id);
+      END IF;
+    END IF;
+  END IF;
+
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3. Attach trigger to lessons table
+DROP TRIGGER IF EXISTS trg_renumber_lessons ON lessons;
+
+CREATE TRIGGER trg_renumber_lessons
+AFTER INSERT OR UPDATE OR DELETE ON lessons
+FOR EACH ROW
+EXECUTE FUNCTION trigger_renumber_lessons();
