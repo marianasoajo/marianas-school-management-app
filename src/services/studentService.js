@@ -28,7 +28,6 @@ export const studentService = {
         const { data, error } = await query
         if (error) throw error
 
-        // Filter enrolments locally if yearId or formId provided
         if (!yearId && !formId) return data
 
         return data.filter(student =>
@@ -127,6 +126,64 @@ export const studentService = {
 
     async deleteStudent(id) {
         const { error } = await supabase.from('students').delete().eq('id', id)
+        if (error) throw error
+    },
+
+    async addEnrolment({ studentId, yearId, formId, groupNumber }) {
+        const { data, error } = await supabase
+            .from('student_enrolments')
+            .insert([{
+                student_id: studentId,
+                school_year_id: yearId,
+                school_form_id: formId,
+                group_number: groupNumber ? parseInt(groupNumber, 10) : null
+            }])
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
+    },
+
+    async deleteEnrolment(enrolmentId) {
+        const { error } = await supabase.from('student_enrolments').delete().eq('id', enrolmentId)
+        if (error) throw error
+    },
+
+    async addGuardian({ studentId, guardianData }) {
+        const { data: guardian, error: guardianError } = await supabase
+            .from('guardians')
+            .insert([{
+                name: guardianData.name,
+                phone_number: guardianData.phone_number || null,
+                email: guardianData.email || null
+            }])
+            .select()
+            .single()
+
+        if (guardianError) throw guardianError
+
+        const { data: link, error: linkError } = await supabase
+            .from('student_guardians')
+            .insert([{
+                student_id: studentId,
+                guardian_id: guardian.id,
+                relationship: guardianData.relationship || 'Encarregado de Educação'
+            }])
+            .select()
+            .single()
+
+        if (linkError) throw linkError
+        return { guardian, link }
+    },
+
+    async detachGuardian(studentId, guardianId) {
+        const { error } = await supabase
+            .from('student_guardians')
+            .delete()
+            .eq('student_id', studentId)
+            .eq('guardian_id', guardianId)
+
         if (error) throw error
     },
 
