@@ -7,6 +7,7 @@ export const planningService = {
             .select(`
         *,
         planning_unit_forms (
+          school_form_id,
           school_forms (id, year_level, class_section)
         )
       `)
@@ -80,5 +81,43 @@ export const planningService = {
             .eq('id', id)
 
         if (error) throw error
+    },
+
+    async exportToLesson({ unit, selectedFields = [], yearId, formId, date, subject }) {
+        const fieldLabels = {
+            theme: 'Tema',
+            activities: 'Atividades',
+            manual_pages: 'Pág. Manual',
+            resources_physical: 'Recursos Físicos',
+            resources_digital: 'Recursos Digitais',
+            exercises_physical: 'Exercícios Físicos',
+            exercises_digital: 'Exercícios Digitais',
+            registers: 'Registos'
+        }
+
+        const summaryParts = []
+        selectedFields.forEach(field => {
+            if (unit[field]) {
+                summaryParts.push(`<p><strong>${fieldLabels[field] || field}:</strong> ${unit[field]}</p>`)
+            }
+        })
+
+        const summaryHtml = summaryParts.join('')
+
+        const { data, error } = await supabase
+            .from('lessons')
+            .insert([{
+                school_year_id: yearId,
+                school_form_id: formId,
+                subject: subject || 'Português',
+                date: date || new Date().toISOString().split('T')[0],
+                summary: summaryHtml,
+                lesson_number: '1' // Database trigger handles actual sequential renumbering
+            }])
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
     }
 }
