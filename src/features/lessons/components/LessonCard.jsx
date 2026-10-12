@@ -1,4 +1,4 @@
-import { AlertCircle, Check, ChevronDown, ChevronUp, ClipboardCheck, ClipboardCopy, Edit2, Eye, FileText, Trash2 } from 'lucide-react'
+import { AlertCircle, Check, ChevronDown, ChevronUp, ClipboardCheck, ClipboardCopy, Copy, Edit2, Eye, FileText, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Badge from '../../../components/ui/Badge'
@@ -7,10 +7,11 @@ import Card from '../../../components/ui/Card'
 
 export default function LessonCard({
     lesson,
+    isCopied,
+    onExportInovar,
     onStudentView,
     onOpenEvaluation,
-    onExportInovar,
-    isCopied = false,
+    onExportLesson,
     onEdit,
     onDelete
 }) {
@@ -49,6 +50,14 @@ export default function LessonCard({
 
                     {/* Action Toolbar directly on the row */}
                     <div className="flex items-center justify-end gap-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-app-border shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onExportLesson(lesson)}
+                            title={t('export_lesson') || 'Export Lesson'}
+                        >
+                            <Copy className="w-4 h-4 text-content-muted hover:text-brand-primary" />
+                        </Button>
                         {/* Export to Inovar Button */}
                         <Button
                             variant="ghost"

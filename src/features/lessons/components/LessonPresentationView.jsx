@@ -33,6 +33,7 @@ export default function LessonPresentationView() {
     const [evalLesson, setEvalLesson] = useState(null)
     const [deletingId, setDeletingId] = useState(null)
     const [copiedLessonId, setCopiedLessonId] = useState(null)
+    const [exportingLesson, setExportingLesson] = useState(null)
 
     // Auto-default filter to the active school year once metadata loads
     useEffect(() => {
@@ -143,6 +144,10 @@ export default function LessonPresentationView() {
                             onExportInovar={handleExportInovar}
                             onStudentView={setStudentViewLesson}
                             onOpenEvaluation={setEvalLesson}
+                            onExportLesson={(lesson) => {
+                                setExportingLesson(lesson)
+                                setIsImportOpen(true)
+                            }}
                             onEdit={handleEdit}
                             onDelete={setDeletingId}
                         />
@@ -167,7 +172,11 @@ export default function LessonPresentationView() {
             {isImportOpen && (
                 <LessonImportModal
                     isOpen={isImportOpen}
-                    onClose={() => setIsImportOpen(false)}
+                    onClose={() => {
+                        setIsImportOpen(false)
+                        setExportingLesson(null)
+                    }}
+                    sourceLesson={exportingLesson}
                     years={years}
                     forms={forms}
                     onSuccess={refresh}
