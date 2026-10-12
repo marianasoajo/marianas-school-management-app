@@ -144,7 +144,7 @@
 }
 
 .student-view-summary {
-  @apply text-2xl sm:text-3xl leading-relaxed text-gray-800 dark:text-gray-200 text-left prose dark:prose-invert max-w-none;
+  @apply text-2xl sm:text-3xl leading-relaxed text-gray-800 dark:text-gray-200 text-left max-w-none;
 }
 
 .student-view-attention {
