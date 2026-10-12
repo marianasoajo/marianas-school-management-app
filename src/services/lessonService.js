@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase'
 
 export const lessonService = {
-    async getLessons({ yearId, formId, startDate, endDate, subject } = {}) {
+    async getLessons({ yearId, formId, startDate, endDate, date, dateMode = 'single', subject, searchQuery } = {}) {
         let query = supabase
             .from('lessons')
             .select(`
@@ -9,17 +9,30 @@ export const lessonService = {
         school_years (id, label),
         school_forms (id, year_level, class_section)
       `)
-            .order('date', { ascending: false })
+            .order('date', { ascending: true }) // DB-level chronological ascending ordering
+            .order('lesson_number', { ascending: true })
 
         if (yearId) query = query.eq('school_year_id', yearId)
         if (formId) query = query.eq('school_form_id', formId)
         if (subject) query = query.eq('subject', subject)
-        if (startDate) query = query.gte('date', startDate)
-        if (endDate) query = query.lte('date', endDate)
+
+        // Filter by single date or date range
+        if (dateMode === 'single' && date) {
+            query = query.eq('date', date)
+        } else if (dateMode === 'range') {
+            if (startDate) query = query.gte('date', startDate)
+            if (endDate) query = query.lte('date', endDate)
+        }
+
+        // Full-text search across summary, attention box, and teacher notes
+        if (searchQuery && searchQuery.trim()) {
+            const q = searchQuery.trim()
+            query = query.or(`summary.ilike.%${q}%,attention_box.ilike.%${q}%,teacher_notes.ilike.%${q}%`)
+        }
 
         const { data, error } = await query
         if (error) throw error
-        return data
+        return data || []
     },
 
     async getNextLessonNumber(yearId, formId) {
@@ -64,48 +77,15 @@ export const lessonService = {
     },
 
     async deleteLesson(id) {
-        // 1. Fetch lesson details before deleting to check lesson_number, year, and form
-        const { data: targetLesson, error: fetchErr } = await supabase
-            .from('lessons')
-            .select('school_year_id, school_form_id, lesson_number')
-            .eq('id', id)
-            .single()
-
-        if (fetchErr) throw fetchErr
-
-        // 2. Delete target lesson
-        const { error: deleteErr } = await supabase
+        const { error } = await supabase
             .from('lessons')
             .delete()
             .eq('id', id)
 
-        if (deleteErr) throw deleteErr
-
-        // 3. Renumber subsequent lessons automatically if numerical
-        const deletedNum = parseInt(targetLesson.lesson_number, 10)
-        if (!isNaN(deletedNum)) {
-            const { data: subsequent } = await supabase
-                .from('lessons')
-                .select('id, lesson_number')
-                .eq('school_year_id', targetLesson.school_year_id)
-                .eq('school_form_id', targetLesson.school_form_id)
-
-            if (subsequent) {
-                for (const lesson of subsequent) {
-                    const currentNum = parseInt(lesson.lesson_number, 10)
-                    if (!isNaN(currentNum) && currentNum > deletedNum) {
-                        await supabase
-                            .from('lessons')
-                            .update({ lesson_number: String(currentNum - 1) })
-                            .eq('id', lesson.id)
-                    }
-                }
-            }
-        }
+        if (error) throw error
     },
 
     async importSummaries({ sourceYearId, sourceFormId, targetYearId, targetFormIds }) {
-        // Fetch source lessons
         const { data: sourceLessons, error: sourceErr } = await supabase
             .from('lessons')
             .select('*')
@@ -118,7 +98,10 @@ export const lessonService = {
         const newLessons = []
         for (const targetFormId of targetFormIds) {
             for (const lesson of sourceLessons) {
-                const { id, created_at, ...lessonBody } = lesson
+                const lessonBody = { ...lesson }
+                delete lessonBody.id
+                delete lessonBody.created_at
+
                 newLessons.push({
                     ...lessonBody,
                     school_year_id: targetYearId,
