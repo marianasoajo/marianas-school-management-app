@@ -4,63 +4,63 @@
 
 @layer base {
   :root {
-    --color-bg-app: 249 250 251;
-    /* gray-50 */
+    /* Palette Base Variables (RGB channels) */
+    --dusty-mauve: 161 70 70;
+    /* #a14646 */
+    --camel: 191 146 100;
+    /* #bf9264 */
+    --soft-fawn: 225 200 142;
+    /* #e1c88e */
+    --pearl-beige: 229 211 175;
+    /* #e5d3af */
+
+    /* App Core Colors (Light Mode) */
+    --color-bg-app: 252 250 246;
+    /* Light warm pearl background */
     --color-surface: 255 255 255;
-    /* white */
-    --color-surface-hover: 243 244 246;
-    /* gray-100 */
-    --color-border: 229 231 235;
-    /* gray-200 */
-    --color-text-main: 17 24 39;
-    /* gray-900 */
-    --color-text-muted: 107 114 128;
-    /* gray-500 */
+    /* Surface card white */
+    --color-surface-hover: 247 242 233;
+    --color-border: 229 211 175;
+    /* Pearl Beige border */
 
-    /* Primary Accent: Indigo */
-    --color-primary: 79 70 229;
-    /* indigo-600 */
-    --color-primary-hover: 67 56 202;
-    /* indigo-700 */
-    --color-primary-light: 238 242 255;
-    /* indigo-50 */
+    --color-text-main: 45 30 30;
+    /* Dark warm espresso text */
+    --color-text-muted: 130 100 85;
+    /* Muted camel/mauve text */
 
-    /* Secondary Accent: Teal */
-    --color-secondary: 13 148 136;
-    /* teal-600 */
+    /* Primary Accent: Dusty Mauve */
+    --color-primary: var(--dusty-mauve);
+    --color-primary-hover: var(--camel);
+    --color-primary-light: var(--pearl-beige);
 
-    /* Functional Colors */
-    --color-danger: 220 38 38;
-    /* red-600 */
-    --color-success: 22 163 74;
-    /* green-600 */
-    --color-warning: 217 119 6;
-    /* amber-600 */
+    /* Secondary Accent: Camel */
+    --color-secondary: var(--camel);
+
+    /* Functional Highlights */
+    --color-danger: 185 28 28;
+    --color-success: 22 101 52;
+    --color-warning: 191 146 100;
   }
 
   .dark {
-    --color-bg-app: 3 7 18;
-    /* gray-950 */
-    --color-surface: 17 24 39;
-    /* gray-900 */
-    --color-surface-hover: 31 41 55;
-    /* gray-800 */
-    --color-border: 55 65 81;
-    /* gray-700 */
-    --color-text-main: 249 250 251;
-    /* gray-50 */
-    --color-text-muted: 156 163 175;
-    /* gray-400 */
+    /* App Core Colors (Dark Mode) */
+    --color-bg-app: 18 12 12;
+    /* Dark earthy backdrop */
+    --color-surface: 32 22 22;
+    /* Dark mauve-tinted surface */
+    --color-surface-hover: 48 32 32;
+    --color-border: 75 50 45;
 
-    --color-primary: 99 102 241;
-    /* indigo-500 */
-    --color-primary-hover: 129 140 248;
-    /* indigo-400 */
-    --color-primary-light: 30 27 75;
-    /* indigo-950 */
+    --color-text-main: 245 238 228;
+    --color-text-muted: 195 170 150;
 
-    --color-secondary: 20 184 166;
-    /* teal-500 */
+    /* Primary Accent in Dark Mode: Soft Fawn */
+    --color-primary: var(--soft-fawn);
+    --color-primary-hover: var(--pearl-beige);
+    --color-primary-light: 45 25 25;
+
+    /* Secondary Accent: Camel */
+    --color-secondary: var(--camel);
   }
 
   body {
@@ -72,6 +72,54 @@
   }
 }
 
+/* Custom Utility Palette Classes */
+@layer utilities {
+  .bg-dusty-mauve {
+    background-color: rgb(var(--dusty-mauve));
+  }
+
+  .text-dusty-mauve {
+    color: rgb(var(--dusty-mauve));
+  }
+
+  .bg-camel {
+    background-color: rgb(var(--camel));
+  }
+
+  .text-camel {
+    color: rgb(var(--camel));
+  }
+
+  .bg-soft-fawn {
+    background-color: rgb(var(--soft-fawn));
+  }
+
+  .text-soft-fawn {
+    color: rgb(var(--soft-fawn));
+  }
+
+  .bg-pearl-beige {
+    background-color: rgb(var(--pearl-beige));
+  }
+
+  .text-pearl-beige {
+    color: rgb(var(--pearl-beige));
+  }
+
+  /* Gradient Utilities */
+  .bg-gradient-palette-right {
+    background-image: linear-gradient(90deg, #a14646, #bf9264, #e1c88e, #e5d3af);
+  }
+
+  .bg-gradient-palette-bottom {
+    background-image: linear-gradient(180deg, #a14646, #bf9264, #e1c88e, #e5d3af);
+  }
+
+  .bg-gradient-palette-radial {
+    background-image: radial-gradient(circle, #a14646, #bf9264, #e1c88e, #e5d3af);
+  }
+}
+
 /* Touch target optimizations for mobile */
 @media (max-width: 640px) {
 
@@ -80,7 +128,6 @@
   button,
   textarea {
     font-size: 16px !important;
-    /* Prevents auto-zoom on iOS */
   }
 }
 
@@ -88,47 +135,44 @@
 .rich-text-wrapper .ql-toolbar {
   border-top-left-radius: 0.75rem;
   border-top-right-radius: 0.75rem;
-  border-color: var(--app-border, #e5e7eb);
-  background-color: var(--app-surface, #ffffff);
+  border-color: rgb(var(--color-border));
+  background-color: rgb(var(--color-surface));
 }
 
 .rich-text-wrapper .ql-container {
   border-bottom-left-radius: 0.75rem;
   border-bottom-right-radius: 0.75rem;
-  border-color: var(--app-border, #e5e7eb);
-  background-color: var(--app-surface, #ffffff);
+  border-color: rgb(var(--color-border));
+  background-color: rgb(var(--color-surface));
   font-family: inherit;
   font-size: 0.875rem;
   min-height: 120px;
 }
 
-/* Dark mode adjustments */
-.dark .rich-text-wrapper .ql-toolbar {
-  border-color: rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
+.dark .rich-text-wrapper .ql-toolbar,
 .dark .rich-text-wrapper .ql-container {
-  border-color: rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #f3f4f6;
+  border-color: rgb(var(--color-border));
+  background-color: rgb(var(--color-surface));
+  color: rgb(var(--color-text-main));
 }
 
 .dark .rich-text-wrapper .ql-stroke {
-  stroke: #9ca3af !important;
+  stroke: rgb(var(--color-text-muted)) !important;
 }
 
 .dark .rich-text-wrapper .ql-fill {
-  fill: #9ca3af !important;
+  fill: rgb(var(--color-text-muted)) !important;
 }
 
 .dark .rich-text-wrapper .ql-picker {
-  color: #9ca3af !important;
+  color: rgb(var(--color-text-muted)) !important;
 }
 
-/* Student Presentation View Styles */
+/* Student Presentation View Styling */
 .student-view-container {
-  @apply fixed inset-0 z-50 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col justify-between p-8 sm:p-16 overflow-y-auto transition-colors;
+  @apply fixed inset-0 z-50 flex flex-col justify-between p-8 sm:p-16 overflow-y-auto transition-colors;
+  background-color: rgb(var(--color-bg-app));
+  color: rgb(var(--color-text-main));
 }
 
 .student-view-heading {
@@ -136,17 +180,21 @@
 }
 
 .student-view-date {
-  @apply text-3xl sm:text-4xl font-medium text-gray-600 dark:text-gray-400 text-left;
+  @apply text-3xl sm:text-4xl font-medium text-left;
+  color: rgb(var(--color-text-muted));
 }
 
 .student-view-section-title {
-  @apply text-3xl font-bold text-left text-gray-900 dark:text-white;
+  @apply text-3xl font-bold text-left;
+  color: rgb(var(--color-text-main));
 }
 
 .student-view-summary {
-  @apply text-2xl sm:text-3xl leading-relaxed text-gray-800 dark:text-gray-200 text-left max-w-none;
+  @apply text-2xl sm:text-3xl leading-relaxed text-left max-w-none;
 }
 
 .student-view-attention {
-  @apply w-full max-w-3xl mx-auto p-6 bg-amber-50 dark:bg-amber-950/40 border-l-4 sm:border-2 border-amber-400 dark:border-amber-600 rounded-2xl text-center shadow-sm mt-auto;
+  @apply w-full max-w-3xl mx-auto p-6 border-l-4 sm:border-2 rounded-2xl text-center shadow-sm mt-auto;
+  background-color: rgba(var(--pearl-beige), 0.25);
+  border-color: rgb(var(--camel));
 }
