@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
+import IconButton from './IconButton'
 
-export function useDarkMode() {
-    const [isDark, setIsDark] = useState(() =>
-        document.documentElement.classList.contains('dark')
+export default function ThemeToggleHelper({ theme, onToggle }) {
+    return (
+        <IconButton
+            variant="ghost"
+            onClick={onToggle}
+            aria-label="Toggle theme"
+            title="Alternar Tema"
+        >
+            {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
+        </IconButton>
     )
-
-    useEffect(() => {
-        const root = document.documentElement
-        if (isDark) {
-            root.classList.add('dark')
-        } else {
-            root.classList.remove('dark')
-        }
-    }, [isDark])
-
-    return [isDark, setIsDark]
 }

@@ -83,3 +83,70 @@
     /* Prevents auto-zoom on iOS */
   }
 }
+
+/* Rich Text Editor Custom Styling */
+.rich-text-wrapper .ql-toolbar {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  border-color: var(--app-border, #e5e7eb);
+  background-color: var(--app-surface, #ffffff);
+}
+
+.rich-text-wrapper .ql-container {
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+  border-color: var(--app-border, #e5e7eb);
+  background-color: var(--app-surface, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  min-height: 120px;
+}
+
+/* Dark mode adjustments */
+.dark .rich-text-wrapper .ql-toolbar {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .rich-text-wrapper .ql-container {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+}
+
+.dark .rich-text-wrapper .ql-stroke {
+  stroke: #9ca3af !important;
+}
+
+.dark .rich-text-wrapper .ql-fill {
+  fill: #9ca3af !important;
+}
+
+.dark .rich-text-wrapper .ql-picker {
+  color: #9ca3af !important;
+}
+
+/* Student Presentation View Styles */
+.student-view-container {
+  @apply fixed inset-0 z-50 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col justify-between p-8 sm:p-16 overflow-y-auto transition-colors;
+}
+
+.student-view-heading {
+  @apply text-5xl sm:text-7xl font-extrabold tracking-tight text-left;
+}
+
+.student-view-date {
+  @apply text-3xl sm:text-4xl font-medium text-gray-600 dark:text-gray-400 text-left;
+}
+
+.student-view-section-title {
+  @apply text-3xl font-bold text-left text-gray-900 dark:text-white;
+}
+
+.student-view-summary {
+  @apply text-2xl sm:text-3xl leading-relaxed text-gray-800 dark:text-gray-200 text-left prose dark:prose-invert max-w-none;
+}
+
+.student-view-attention {
+  @apply w-full max-w-3xl mx-auto p-6 bg-amber-50 dark:bg-amber-950/40 border-l-4 sm:border-2 border-amber-400 dark:border-amber-600 rounded-2xl text-center shadow-sm mt-auto;
+}

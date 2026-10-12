@@ -1,10 +1,25 @@
-import { AlertCircle, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import IconButton from '../../../components/ui/IconButton'
 
-export default function StudentViewModal({ lesson, onClose }) {
-    const { t } = useTranslation()
+// Helper for English number words
+const numToWord = (num) => {
+    const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
+    return words[num] || num
+}
+
+// Helper for English ordinal words
+const getOrdinalEn = (day) => {
+    const suffixes = { 1: '1st (the first)', 2: '2nd (the second)', 3: '3rd (the third)', 21: '21st (the twenty-first)', 22: '22nd (the twenty-second)', 23: '23rd (the twenty-third)', 31: '31st (the thirty-first)' }
+    if (suffixes[day]) return suffixes[day]
+    const ord = day % 10 === 4 || day % 10 === 5 || day % 10 === 6 || day % 10 === 7 || day % 10 === 8 || day % 10 === 9 || day % 10 === 0 ? 'th' : 'th'
+    return `${day}${ord}`
+}
+
+export default function StudentViewModal({ lesson, onClose, formatters }) {
+    const { i18n, t } = useTranslation()
+    const lang = i18n.language || 'pt'
+    const isPt = lang.startsWith('pt')
 
     useEffect(() => {
         const handleKeyDown = (e) => e.key === 'Escape' && onClose()
@@ -18,56 +33,86 @@ export default function StudentViewModal({ lesson, onClose }) {
 
     if (!lesson) return null
 
-    return (
-        <div className="fixed inset-0 z-50 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
-            {/* Top Header Bar */}
-            <div className="flex items-center justify-between">
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {lesson.date}
-                </div>
-                <IconButton
-                    variant="ghost"
-                    size="lg"
-                    onClick={onClose}
-                    aria-label={t('close')}
-                    className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                >
-                    <X className="w-8 h-8" />
-                </IconButton>
-            </div>
+    // Default lesson number formatter
+    const defaultFormatLessonNumber = (num, endNum) => {
+        if (isPt) {
+            return endNum ? `Lições n.º ${num} e ${endNum}` : `Lição n.º ${num}`
+        }
+        return endNum
+            ? `Lessons no. ${num} (${numToWord(num)}) and ${endNum} (${numToWord(endNum)})`
+            : `Lesson no. ${num} (${numToWord(num)})`
+    }
 
-            {/* Main Classroom Projection Display */}
-            <div className="max-w-4xl mx-auto w-full my-auto text-center space-y-8 py-8">
-                {/* Lesson Number Heading */}
-                <div className="space-y-2">
-                    <div className="text-sm font-semibold tracking-widest uppercase text-brand-primary">
-                        {lesson.subject}
-                    </div>
-                    <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight">
-                        {t('lesson_single')} {lesson.lesson_number}
+    // Default date formatter
+    const defaultFormatDate = (dateStr) => {
+        if (!dateStr) return ''
+        const dateObj = new Date(dateStr)
+        if (isNaN(dateObj.getTime())) return dateStr
+
+        if (isPt) {
+            const d = String(dateObj.getDate()).padStart(2, '0')
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0')
+            return `${d}/${m}/${dateObj.getFullYear()}`
+        }
+
+        const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+        const month = dateObj.toLocaleDateString('en-US', { month: 'long' })
+        const dayOrdinal = getOrdinalEn(dateObj.getDate())
+        return `${weekday}, ${dayOrdinal} ${month} ${dateObj.getFullYear()}`
+    }
+
+    const formatLessonNumber = formatters?.formatLessonNumber || defaultFormatLessonNumber
+    const formatDate = formatters?.formatDate || defaultFormatDate
+    const translate = formatters?.t || t
+
+    return (
+        <div className="student-view-container">
+            {/* Close Button */}
+            <button
+                onClick={onClose}
+                className="absolute top-6 right-6 p-3 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors z-10"
+                aria-label={translate('close') || 'Close'}
+            >
+                <X size={32} />
+            </button>
+
+            {/* Top & Main Content Area (Left and Top aligned) */}
+            <div className="flex-1 flex flex-col justify-between w-full max-w-6xl mx-auto pt-4 pb-8 space-y-8">
+                {/* Lesson Header & Date */}
+                <div className="space-y-4 text-left">
+                    <h1 className="student-view-heading">
+                        {formatLessonNumber(lesson.lesson_number, lesson.lesson_number_end)}
                     </h1>
+                    <div className="student-view-date">
+                        {formatDate(lesson.date)}
+                    </div>
                 </div>
 
                 {/* Lesson Summary */}
-                <div className="text-xl sm:text-3xl leading-relaxed text-gray-800 dark:text-gray-200 prose dark:prose-invert max-w-none mx-auto">
-                    <div dangerouslySetInnerHTML={{ __html: lesson.summary }} />
-                </div>
-
-                {/* Attention Box (Highlighted if available) */}
-                {lesson.attention_box && (
-                    <div className="mt-8 p-6 bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 rounded-2xl flex items-center justify-center gap-4 text-left max-w-2xl mx-auto shadow-sm">
-                        <AlertCircle className="w-8 h-8 text-amber-600 shrink-0" />
+                {lesson.summary && (
+                    <div className="flex-1 space-y-3 text-left">
+                        <h2 className="student-view-section-title">
+                            {isPt ? 'Sumário:' : 'Summary:'}
+                        </h2>
                         <div
-                            className="text-lg sm:text-xl font-medium text-amber-900 dark:text-amber-100 prose dark:prose-invert max-w-none"
+                            className="student-view-summary"
+                            dangerouslySetInnerHTML={{ __html: lesson.summary }}
+                        />
+                    </div>
+                )}
+
+                {/* Attention Box (Centered at Bottom) */}
+                {lesson.attention_box && (
+                    <div className="student-view-attention">
+                        <h2 className="text-xl sm:text-2xl font-bold text-amber-900 dark:text-amber-200 mb-2">
+                            {isPt ? 'Atenção:' : 'Attention:'}
+                        </h2>
+                        <div
+                            className="text-lg sm:text-xl text-amber-800 dark:text-amber-300 prose dark:prose-invert max-w-none"
                             dangerouslySetInnerHTML={{ __html: lesson.attention_box }}
                         />
                     </div>
                 )}
-            </div>
-
-            {/* Footer Minimal Indicator */}
-            <div className="text-center text-xs text-gray-400 dark:text-gray-600">
-                Press ESC or click X to exit presentation mode
             </div>
         </div>
     )

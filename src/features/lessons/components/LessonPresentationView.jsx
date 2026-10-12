@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { AlertCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ConfirmDeletionModal from '../../../components/ui/ConfirmDeletionModal'
 import OralEvaluationModal from '../../evaluation/components/OralEvaluationModal'
@@ -14,19 +15,56 @@ export default function LessonPresentationView() {
     const { t } = useTranslation()
     const { years, forms } = useGroupsManager()
 
-    const [selectedYear, setSelectedYear] = useState('')
-    const [selectedForm, setSelectedForm] = useState('')
+    const [filters, setFilters] = useState({
+        yearId: '',
+        formId: '',
+        subject: '',
+        searchQuery: '',
+        dateMode: 'single',
+        date: '',
+        startDate: '',
+        endDate: ''
+    })
+
     const [editingLesson, setEditingLesson] = useState(null)
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [isImportOpen, setIsImportOpen] = useState(false)
     const [studentViewLesson, setStudentViewLesson] = useState(null)
     const [evalLesson, setEvalLesson] = useState(null)
     const [deletingId, setDeletingId] = useState(null)
+    const [copiedLessonId, setCopiedLessonId] = useState(null)
 
-    const { lessons, loading, error, createLesson, updateLesson, deleteLesson, refresh } = useLessons({
-        yearId: selectedYear,
-        formId: selectedForm
-    })
+    // Auto-default filter to the active school year once metadata loads
+    useEffect(() => {
+        if (years.length > 0 && !filters.yearId) {
+            const activeYear = years.find((y) => y.is_active) || years[0]
+            if (activeYear) {
+                setFilters((prev) => ({ ...prev, yearId: activeYear.id }))
+            }
+        }
+    }, [years, filters.yearId])
+
+    const { lessons, loading, error, createLesson, updateLesson, deleteLesson, refresh } = useLessons(filters)
+
+    // Clean HTML tags, copy plain text to clipboard, and open Inovar
+    const handleExportInovar = async (lesson) => {
+        if (!lesson) return
+
+        const summaryDocument = new DOMParser().parseFromString(lesson.summary || '', 'text/html')
+        summaryDocument.body.querySelectorAll('br').forEach((el) => el.replaceWith('\n'))
+        summaryDocument.body.querySelectorAll('p, div, li').forEach((el) => el.append('\n'))
+        const summaryText = summaryDocument.body.textContent.replace(/\n{3,}/g, '\n\n').trim()
+
+        window.open('https://aemaximinos.inovarmais.com/Alunos/Inicial.wgx', '_blank', 'noopener,noreferrer')
+
+        try {
+            await navigator.clipboard.writeText(summaryText)
+            setCopiedLessonId(lesson.id)
+            setTimeout(() => setCopiedLessonId(null), 2500)
+        } catch {
+            // Fallback handling if clipboard access is denied
+        }
+    }
 
     const handleCreateNew = () => {
         setEditingLesson(null)
@@ -54,18 +92,31 @@ export default function LessonPresentationView() {
         }
     }
 
+    const handleResetFilters = () => {
+        const activeYear = years.find((y) => y.is_active) || years[0]
+        setFilters({
+            yearId: activeYear ? activeYear.id : '',
+            formId: '',
+            subject: '',
+            searchQuery: '',
+            dateMode: 'single',
+            date: '',
+            startDate: '',
+            endDate: ''
+        })
+    }
+
     return (
         <div className="space-y-4">
-            {/* Top Filter and Actions */}
+            {/* Top Filters */}
             <LessonFilterBar
                 years={years}
                 forms={forms}
-                selectedYear={selectedYear}
-                selectedForm={selectedForm}
-                onYearChange={setSelectedYear}
-                onFormChange={setSelectedForm}
+                filters={filters}
+                onFilterChange={setFilters}
                 onOpenCreateModal={handleCreateNew}
                 onOpenImportModal={() => setIsImportOpen(true)}
+                onResetFilters={handleResetFilters}
             />
 
             {/* Main List State */}
@@ -74,19 +125,22 @@ export default function LessonPresentationView() {
                     {t('loading')}
                 </div>
             ) : error ? (
-                <div className="p-4 bg-red-50 dark:bg-red-950/30 text-red-600 rounded-xl text-center text-sm">
-                    {error}
+                <div className="p-4 bg-red-50 dark:bg-red-950/30 text-red-600 rounded-xl text-center text-sm flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{error}</span>
                 </div>
             ) : lessons.length === 0 ? (
                 <div className="py-12 text-center text-content-muted border border-dashed border-app-border rounded-xl">
                     {t('no_lessons')}
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                     {lessons.map((lesson) => (
                         <LessonCard
                             key={lesson.id}
                             lesson={lesson}
+                            isCopied={copiedLessonId === lesson.id}
+                            onExportInovar={handleExportInovar}
                             onStudentView={setStudentViewLesson}
                             onOpenEvaluation={setEvalLesson}
                             onEdit={handleEdit}
@@ -105,8 +159,8 @@ export default function LessonPresentationView() {
                     lesson={editingLesson}
                     years={years}
                     forms={forms}
-                    initialYearId={selectedYear}
-                    initialFormId={selectedForm}
+                    initialYearId={filters.yearId}
+                    initialFormId={filters.formId}
                 />
             )}
 
