@@ -205,7 +205,7 @@
     "password_placeholder": "Introduza a sua password",
     "login_footer": "© 2026 Professora Mariana - Todos os direitos reservados",
     "logout": "Sair",
-    "import_summaries": "Importar Summários",
+    "import_summaries": "Importar Sumários",
     "import_summaries_description": "Copiar sumário para outras turmas. Selecione a turma de origem e os grupos de destino abaixo.",
     "source_group": "Turma de origem",
     "target_groups": "Turmas de destino (selecione uma ou mais)",
