@@ -95,7 +95,7 @@ export default function LessonFormModal({
                     />
 
                     <Input
-                        label={t('lesson_number')}
+                        label={t('lesson_single')}
                         value={formData.lesson_number}
                         onChange={(e) => setFormData({ ...formData, lesson_number: e.target.value })}
                         placeholder="Auto"

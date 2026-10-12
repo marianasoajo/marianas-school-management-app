@@ -136,11 +136,12 @@ export default function LessonImportModal({
     const formOptions = forms.map((f) => ({ value: f.id, label: `${f.year_level} - ${f.class_section}` }))
     const sourceLessonOptions = sourceLessons.map((l) => ({
         value: l.id,
-        label: `Lesson #${l.lesson_number} (${l.date || 'No Date'}) - ${l.subject || 'No Subject'}`
+        label: `${t('lesson_single')} ${l.lesson_number} (${l.date || t('no_date')}) - ${l.subject || t('no_subject')}`
     }))
+
     const targetLessonOptions = targetLessons.map((l) => ({
         value: l.id,
-        label: `Lesson #${l.lesson_number} (${l.date || 'No Date'})`
+        label: `${t('lesson_single')} ${l.lesson_number} (${l.date || t('no_date')})`
     }))
 
     return (
@@ -248,7 +249,7 @@ export default function LessonImportModal({
                             label={t('target_group') || 'Target Group / Class'}
                             value={targetForm}
                             onChange={(e) => setTargetForm(e.target.value)}
-                            options={[{ value: '', label: '-- Select Group --' }, ...formOptions]}
+                            options={[{ value: '', label: t('select_target_year') }, ...formOptions]}
                         />
                     </div>
 
@@ -285,7 +286,7 @@ export default function LessonImportModal({
                                     label={t('target_lesson') || 'Select Target Lesson to Overwrite'}
                                     value={targetLessonId}
                                     onChange={(e) => setTargetLessonId(e.target.value)}
-                                    options={[{ value: '', label: '-- Select Target Lesson --' }, ...targetLessonOptions]}
+                                    options={[{ value: '', label: t('select_target_lesson_placeholder') }, ...targetLessonOptions]}
                                     disabled={loadingTargetLessons}
                                 />
                             )}

@@ -38,7 +38,7 @@ export const lessonService = {
     async getNextLessonNumber(yearId, formId) {
         const { data, error } = await supabase
             .from('lessons')
-            .select('lesson_number')
+            .select('lesson_single')
             .eq('school_year_id', yearId)
             .eq('school_form_id', formId)
 
