@@ -272,5 +272,7 @@
     "select_at_least_one_field": "Please select at least one content item to export.",
     "no_date": "No Date",
     "no_subject": "No Subject",
-    "select_target_lesson_placeholder": "Select Target Lesson"
+    "select_target_lesson_placeholder": "Select Target Lesson",
+    "export_planning_unit": "Export Planning Unit to Lesson",
+    "fields_to_include": "Fields to include:"
 }

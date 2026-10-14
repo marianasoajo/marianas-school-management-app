@@ -272,5 +272,7 @@
     "select_at_least_one_field": "Por favor selecione pelo menos um item de conteúdo a exportar.",
     "no_date": "Sem data",
     "no_subject": "Sem disciplina",
-    "select_target_lesson_placeholder": "Selecionar Lição de Destino"
+    "select_target_lesson_placeholder": "Selecionar Lição de Destino",
+    "export_planning_unit": "Exportar Planificação para Lição",
+    "fields_to_include": "Campos a incluir:"
 }
